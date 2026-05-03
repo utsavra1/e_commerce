@@ -1,11 +1,11 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { AppDataSource } from '../app.ts';
 import { Product } from '../entites/Product.ts'
 import { id } from 'zod/locales';
 import { Subcategory } from '../entites/Subcategory.ts';
 import { Categories } from '../entites/Categories.ts';
 
-const getAllProducts = async (req: Request, res: Response) => {
+const getAllProducts = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const productRepo = AppDataSource.getRepository(Product);
     const products = await productRepo.find({
@@ -13,13 +13,13 @@ const getAllProducts = async (req: Request, res: Response) => {
     });
     return res.status(200).json(products);
   } catch (err) {
-    return res.status(500).json({ message: 'Server error', error: err });
+    next(err);
   }
 };
 
 // for geting product by id
 
-const getproductById = async (req: Request, res: Response) => {
+const getproductById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const rawId = req.params['id'];            
     const id = parseInt(rawId as string, 10); 
@@ -41,13 +41,13 @@ const getproductById = async (req: Request, res: Response) => {
     return res.status(200).json(product);
     
   } catch (err) {
-      return res.status(501).json({message: 'server error', error: err});
+      next(err);
   }
 
 };
 
 // get product by subcategory
-const getProductsBySubcategory = async(req: Request, res: Response) =>{
+const getProductsBySubcategory = async(req: Request, res: Response, next: NextFunction) =>{
   try {
     const rawId = req.params['subcategoryId'];
     const subcategoryId = parseInt(rawId as string, 10);
@@ -81,13 +81,13 @@ const getProductsBySubcategory = async(req: Request, res: Response) =>{
 
 
   } catch (err) {
-    return res.status(501).json({message: 'server error', error: err});
+    next(err);
   }
 };
 
 // now by catagory that goes through subcategory
 
-const getProductByCategory = async (req: Request, res: Response) =>{
+const getProductByCategory = async (req: Request, res: Response, next: NextFunction) =>{
   try {
     const rawId = req.params['categoryId'];
     const categoryId = parseInt(rawId as string, 10);
@@ -122,7 +122,7 @@ const getProductByCategory = async (req: Request, res: Response) =>{
     });
 
   } catch (err) {
-    return res.status(501).json({message: 'server error', error: err});
+    next(err);
   }
 };
 

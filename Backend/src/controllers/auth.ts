@@ -1,12 +1,13 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { AppDataSource } from '../app.js'
 import bcrypt from 'bcrypt';
 import { generateToken } from '../utils/jwt.js';
 import { Role, User } from '../entites/User.js';
+import { RegisterInput, LoginInput } from '../schemas/auth.ts';
 
-export const register = async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { username, email, password, phone, dob } = req.body;
+    const { username, email, password, phone, dob } = req.body as RegisterInput;
 
     if (!username || !email || !password || !phone || !dob) {
       return res.status(400).json({ message: 'All fields are required' });
@@ -40,13 +41,13 @@ export const register = async (req: Request, res: Response) => {
 
     return res.status(201).json({ message: 'User registered successfully', user: userWithoutPassword });
   } catch (err) {
-    return res.status(500).json({ message: 'Server error', error: err });
+    next(err);
   }
 };
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body as LoginInput;
 
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password are required' });
@@ -68,6 +69,6 @@ export const login = async (req: Request, res: Response) => {
 
     return res.status(200).json({ message: 'Login successful', token });
   } catch (err) {
-    return res.status(500).json({ message: 'Server error', error: err });
+    next(err);
   }
 };

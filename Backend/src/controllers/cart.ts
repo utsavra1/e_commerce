@@ -1,14 +1,15 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { Cart } from "../entites/Cart.ts";
 import { Cartitem } from "../entites/Cartitem.ts";
 import { Product } from "../entites/Product.ts";
 import { AppDataSource } from "../app.ts";
+import { AddToCartInput, UpdateCartInput } from "../schemas/cart.ts";
 
 
 
-const addToCart = async (req: Request, res: Response) =>{
+const addToCart = async (req: Request, res: Response, next: NextFunction) =>{
     try {
-        const {product_id, quantity} = req.body;
+        const {product_id, quantity} = req.body as AddToCartInput;
         const user_id = (req as any).user.user_id;
 
         const productRepo = AppDataSource.getRepository(Product);
@@ -61,12 +62,12 @@ const addToCart = async (req: Request, res: Response) =>{
             },
          });
     } catch (err) {
-        return res.status(500).json({message: 'Server Error', error: err});
+        next(err);
     };
 
 };
 
-const getMyCart = async (req: Request, res: Response) => {
+const getMyCart = async (req: Request, res: Response, next: NextFunction) => {
     try {
 
         const user_id = (req as any).user.user_id;
@@ -99,12 +100,82 @@ const getMyCart = async (req: Request, res: Response) => {
             })),
         });
     } catch (err) {
-        return res.status(500).json({message: 'Server Error', error: err});
+        next(err);
     }
 };
 
+const removeFromCart = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user_id = (req as any).user.user_id;
+        const cart_item_id = parseInt(req.params['cart_item_id'] as string, 10);
+
+        if(isNaN(cart_item_id)){
+            return res.status(400).json({message: 'Invalid cart item ID'});
+        }
+
+        const cartitemRepo = AppDataSource.getRepository(Cartitem);
+        const cartitem = await cartitemRepo.findOne({
+            where: {
+                cart_item_id, 
+                cart: {user: {user_id}}
+            },
+            relations: ['cart', 'cart.user'],
+        });
+
+        if(!cartitem){
+            return res.status(400).json({message: 'there is no cart'});
+        }
+
+        await cartitemRepo.remove(cartitem);
+        return res.status(200).json({ message: 'Item removed from cart successfully' });
+    } catch (err) {
+        next(err);
+    }
+}
+
+const updateCart = async(req: Request, res: Response, next: NextFunction) =>{
+    try {
+        const user_id = (req as any).user.user_id;
+        const cart_item_id = parseInt(req.params['cart_item_id'] as string, 10);
+        const {quantity} = req.body as UpdateCartInput;
+
+        const cartitemRepo = AppDataSource.getRepository(Cartitem);
+        const cartitem = await cartitemRepo.findOne({
+            where: {
+                cart_item_id, 
+                cart: {user: {user_id}}
+            },
+            relations: ['cart', 'cart.user', 'product'],
+        });
+
+        if(!cartitem){
+            return res.status(400).json({message: 'there is no cart'});
+        }
+
+        if(cartitem.product.stock < quantity){
+            return res.status(400).json({message: 'cant have more quantity than available stock'});
+        }
+
+        cartitem.quantity += quantity;
+        await cartitemRepo.save(cartitem);
+
+        return res.status(200).json({
+            message: 'Cart item updated successfully',
+            item: {
+                cart_item_id: cartitem.cart_item_id,
+                product_name: cartitem.product.product_name,
+                quantity: cartitem.quantity,
+                price: cartitem.product.product_price,
+                subtotal: Number(cartitem.product.product_price) * cartitem.quantity,
+      },
+    });
+
+    } catch (err) {
+        next(err);
+    }
+}
 
 
-export {getMyCart, addToCart};
+export {getMyCart, addToCart, removeFromCart, updateCart};
 
 

@@ -14,3 +14,6 @@ export const updateCartSchema = z.object({
     .int('Quantity must be integer')
     .min(1, 'Quantity must be at least 1')
 })
+
+export type AddToCartInput  = z.infer<typeof addToCartSchema>;
+export type UpdateCartInput = z.infer<typeof updateCartSchema>;

@@ -15,6 +15,9 @@ const registerSchema = z.object({
 
     phone: z.string()
     .regex(/^[0-9]{10}$/, 'Phone must be a valid 10-digit number'),
+
+    dob: z.string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'DOB must be in YYYY-MM-DD format'),
 });
 
 const loginSchema = z.object({
@@ -25,3 +28,5 @@ const loginSchema = z.object({
 });
 
 export {loginSchema, registerSchema};
+export type RegisterInput = z.infer<typeof registerSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;

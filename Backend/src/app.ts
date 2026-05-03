@@ -6,6 +6,7 @@ import { Role } from './entites/User.ts';
 import authRoutes from './routes/auth.ts'
 import productRoutes from './routes/product.ts'
 import cartRoutes from './routes/cart.ts'
+import { errorHandler } from './middleware/errorHandler.ts';
 
 const app = express();
 app.use(express.json());
@@ -47,6 +48,8 @@ export const AppDataSource = new DataSource({
 app.use('/auth', authRoutes);
 app.use('/products', productRoutes);
 app.use('/cart', cartRoutes);
+
+app.use(errorHandler);
 
 
 AppDataSource.initialize().then(() => {
