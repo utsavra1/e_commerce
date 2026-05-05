@@ -6,6 +6,8 @@ import { Role } from './entites/User.ts';
 import authRoutes from './routes/auth.ts'
 import productRoutes from './routes/product.ts'
 import cartRoutes from './routes/cart.ts'
+import orderRoutes from './routes/order.ts'
+import reviewRoutes from './routes/review.ts'
 import { errorHandler } from './middleware/errorHandler.ts';
 
 const app = express();
@@ -48,6 +50,8 @@ export const AppDataSource = new DataSource({
 app.use('/auth', authRoutes);
 app.use('/products', productRoutes);
 app.use('/cart', cartRoutes);
+app.use('/orders', orderRoutes);
+app.use('/reviews', reviewRoutes);
 
 app.use(errorHandler);
 
