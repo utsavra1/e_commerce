@@ -1,13 +1,14 @@
 import 'reflect-metadata';
 import express from 'express';
 import {DataSource} from 'typeorm';
-import { User } from './entites/User.ts';
-import { Role } from './entites/User.ts';
+import { swaggerSpec } from './config/swagger.ts';
+import  swaggerUI  from 'swagger-ui-express';
 import authRoutes from './routes/auth.ts'
 import productRoutes from './routes/product.ts'
 import cartRoutes from './routes/cart.ts'
 import orderRoutes from './routes/order.ts'
 import reviewRoutes from './routes/review.ts'
+import adminRoutes from './routes/admin.ts'
 import { errorHandler } from './middleware/errorHandler.ts';
 
 const app = express();
@@ -46,12 +47,16 @@ export const AppDataSource = new DataSource({
    logging: true
 })
 
+// swagger api 
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+
 // Routes
 app.use('/auth', authRoutes);
 app.use('/products', productRoutes);
 app.use('/cart', cartRoutes);
 app.use('/orders', orderRoutes);
 app.use('/reviews', reviewRoutes);
+app.use('/admin', adminRoutes);
 
 app.use(errorHandler);
 
