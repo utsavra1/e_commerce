@@ -3,6 +3,7 @@ import express from 'express';
 import {DataSource} from 'typeorm';
 import { swaggerSpec } from './config/swagger.ts';
 import  swaggerUI  from 'swagger-ui-express';
+import {env} from './config/env.ts'
 import authRoutes from './routes/auth.ts'
 import productRoutes from './routes/product.ts'
 import cartRoutes from './routes/cart.ts'
@@ -37,11 +38,11 @@ const port = 3000;
 
 export const AppDataSource = new DataSource({
    type: "postgres",
-   host: "localhost",
-   port: 5433,
-   username: "postgres",
-   password: "Ali5ha",
-   database: 'estore',
+   host: env.db.host,
+   port: env.db.port,
+   username: env.db.username,
+   password: env.db.password,
+   database: env.db.name,
    entities: ["src/entites/*{.ts,.js}"],
    synchronize: true,
    logging: true
@@ -57,6 +58,7 @@ app.use('/cart', cartRoutes);
 app.use('/orders', orderRoutes);
 app.use('/reviews', reviewRoutes);
 app.use('/admin', adminRoutes);
+
 
 app.use(errorHandler);
 

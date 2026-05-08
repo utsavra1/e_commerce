@@ -1,13 +1,13 @@
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
+import {env } from '../config/env.ts'
 
-const SECRET = 'MHNHfw2qmktpS5fWRe5GTZtdHx5KTpi3rDMPXmB5bSH';
 
 const generateToken = (payload: object): string => {
-    return jwt.sign(payload, SECRET, {expiresIn: "7d"});
+    return jwt.sign(payload, env.jwt.secret, { expiresIn: env.jwt.expiresIn as SignOptions['expiresIn'] });
 }
 
 const verifyToken = (token: string): any =>{
-    return jwt.verify(token, SECRET);
+    return jwt.verify(token, env.jwt.secret );
 }
 
 export {generateToken, verifyToken};

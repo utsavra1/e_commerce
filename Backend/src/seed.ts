@@ -9,14 +9,15 @@ import { Cartitem } from "./entites/Cartitem.js";
 import { Order } from "./entites/Order.js";
 import { Orderitem } from "./entites/Orderitem.js";
 import { Review } from "./entites/Review.js";
+import {env} from './config/env.ts'
 
 const AppDataSource = new DataSource({
     type: "postgres",
-    host: "localhost",
-    port: 5433,
-    username: "postgres",
-    password: "Ali5ha",
-    database: 'estore',
+    host: env.db.host,
+    port: env.db.port,
+    username: env.db.username,
+    password: env.db.password,
+    database: env.db.name,
     entities: [User, Categories, Subcategory, Product, Cart, Cartitem, Order, Orderitem, Review],
     synchronize: true,
     logging: false

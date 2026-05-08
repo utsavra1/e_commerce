@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { z} from 'zod';
 
-const validate = (schema: z.ZodType) => {
+const validate = (schema: z.ZodType, source: 'body' | 'query' | 'params' = 'body') => {
     return (req: Request, res: Response, next: NextFunction) => {
-        const result = schema.safeParse(req.body);
+        const result = schema.safeParse(req[source]);
 
         if(!result.success){
             const errors = result.error.issues.map((err) =>({
@@ -14,7 +14,7 @@ const validate = (schema: z.ZodType) => {
         return res.status(400).json({ message: 'Validation failed', errors });
         }
 
-        req.body = result.data;
+        (req as any)[source] = result.data;
         next();
     };
 };
