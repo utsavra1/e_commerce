@@ -4,6 +4,7 @@ import { Cartitem } from "./Cartitem.js";
 import type { Order } from "./Order.js";
 import { Orderitem } from "./Orderitem.js";
 import { Review } from "./Review.js";
+import type { Poster } from "./Poster.ts";
 
 @Entity()
 export class Product{
@@ -41,6 +42,9 @@ export class Product{
 
     @OneToMany(() => Review, (review) => review.product)
     review: Review[];
+
+    @OneToMany("Poster", (poster: Poster) => poster.product)
+    posters: Poster[];
 
 
 }

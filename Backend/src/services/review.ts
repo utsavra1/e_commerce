@@ -2,6 +2,7 @@ import { AppDataSource } from '../app.ts';
 import { Review } from '../entites/Review.ts';
 import { Product } from '../entites/Product.ts';
 import { CreateReviewInput } from '../schemas/review.ts';
+import { createError } from '../utils/error.ts';
 
 const createProductReview = async(user_id: number, product_id: number, input: CreateReviewInput) =>{
     const productRepo = AppDataSource.getRepository(Product);
@@ -10,9 +11,7 @@ const createProductReview = async(user_id: number, product_id: number, input: Cr
     });
 
     if (!product) {
-        const error: any = new Error('Product not found');
-        error.status = 404;
-        throw error;
+        throw createError('Product not found', 404);
     }
 
     const reviewRepo = AppDataSource.getRepository(Review);
@@ -24,9 +23,7 @@ const createProductReview = async(user_id: number, product_id: number, input: Cr
     });
 
     if (existingReview) {
-        const error: any = new Error('You have already reviewed this product');
-        error.status = 409;
-        throw error;
+        throw createError('You have already reviewed this product', 404);
     }
 
     const review = reviewRepo.create({
@@ -54,9 +51,7 @@ const fetchProductReview = async(product_id: number) => {
     });
 
     if(!product){
-        const error: any = new Error('Product not found');
-        error.status = 409;
-        throw error;
+        throw createError('Product not found', 404);
     }
 
     const review = await reviewRepo.find({
@@ -65,9 +60,7 @@ const fetchProductReview = async(product_id: number) => {
     });
 
     if(review.length === 0){
-        const error: any = new Error('ther is no review for this product');
-        error.status = 409;
-        throw error;
+        throw createError('There is no review for this product', 404);
     }
 
     const averageRating = review.reduce((sum, review) => {
@@ -98,9 +91,7 @@ const deleteProductReview = async(user_id: number, review_id: number) => {
     });
 
     if(!review){
-        const error: any = new Error('Review not found');
-        error.status = 409;
-        throw error;
+        throw createError('Review not found', 404);
     }
 
     await reviewRepo.remove(review);

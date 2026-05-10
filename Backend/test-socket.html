@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Socket Test</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+  <h2>Socket.io Test</h2>
+  <div id="logs" style="font-family: monospace; padding: 20px;"></div>
+
+  <script>
+    const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1LCJlbWFpbCI6InV0c2F2QGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzc4NDA1ODgwLCJleHAiOjE3NzkwMTA2ODB9.Hp-a8u4NxBPCvp2Fl71KcjgrLpVFTSzV_AMfBGb8yh4'; // ← paste real token
+
+    const socket = io('http://localhost:3000', {
+      auth: { token: TOKEN },
+      transports: ['websocket'], // ✅ skip polling, use websocket directly
+    });
+
+    const log = (data) => {
+      const div = document.getElementById('logs');
+      const line = document.createElement('p');
+      line.style.color = data.event?.includes('error') ? 'red' : 'green';
+      line.textContent = JSON.stringify(data);
+      div.appendChild(line);
+      console.log(data);
+    };
+
+    socket.on('connect', () => {
+      log({ event: 'connected ', socket_id: socket.id });
+    });
+
+    socket.on('disconnect', (reason) => {
+      log({ event: 'disconnected ', reason });
+    });
+
+    socket.on('connect_error', (err) => {
+      log({ event: 'connection error ', message: err.message });
+    });
+
+    socket.on('new_order', (data) => {
+      log({ event: 'new_order ', data });
+    });
+
+    socket.on('order_status_update', (data) => {
+      log({ event: 'order_status_update ', data });
+    });
+
+    socket.on('stock_update', (data) => {
+      log({ event: 'stock_update ', data });
+    });
+  </script>
+</body>
+</html>

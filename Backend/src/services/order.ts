@@ -6,6 +6,9 @@ import { User } from "../entites/User.ts";
 import { Orderitem } from "../entites/Orderitem.ts";
 import { Cartitem } from "../entites/Cartitem.ts";
 import { Product } from "../entites/Product.ts";
+import { getIO } from '../socket/socket.ts';
+import { SOCKET_EVENTS } from '../socket/socket.event.ts';
+import { createError } from "../utils/error.ts";
 
 const placeNewOrder = async (user_id: number, input: PlaceOrderInput) => {
     const orderRepo = AppDataSource.getRepository(Order);
@@ -21,16 +24,12 @@ const placeNewOrder = async (user_id: number, input: PlaceOrderInput) => {
     });
 
     if(!cart || cart.cartitem.length === 0){
-        const error: any = new Error('Your cart is empty');
-        error.status = 400;
-        throw error;
+        throw createError('Your cart is empty', 404);
     }
 
     for(const item of cart.cartitem){
         if(item.product.stock < item.quantity){
-            const error: any = new Error(`Insufficient stock for ${item.product.product_name}. Only ${item.product.stock} left`);
-            error.status = 400;
-            throw error;
+            throw createError(`Insufficient stock for ${item.product.product_name}. Only ${item.product.stock} left`, 404);
         }
     }
 
@@ -58,11 +57,19 @@ const placeNewOrder = async (user_id: number, input: PlaceOrderInput) => {
 
         item.product.stock -= item.quantity;
         await productRepo.save(item.product);
+
+        // using socket when the qantity changes
+
+        getIO().emit(SOCKET_EVENTS.STOCK_UPDATE, {
+            product_id: item.product.product_id,
+            product_name: item.product.product_name,
+            new_stock: item.product.stock,
+        })
     }
 
     await cartitemRepo.delete(cart.cartitem);
 
-    return {
+    const orderSummary = {
     order_id: order.order_id,
     order_description: order.order_description,
     total_amount: order.total_amount,
@@ -73,6 +80,13 @@ const placeNewOrder = async (user_id: number, input: PlaceOrderInput) => {
       subtotal: Number(item.product.product_price) * item.quantity,
     })),
   };
+  // socket to notify admin about order in real time
+  getIO().to('admin_room').emit(SOCKET_EVENTS.NEW_ORDER), {
+    message: `New order #${order.order_id} placed`,
+    ...orderSummary,
+  }
+  return orderSummary;
+
 };
 
 const fetchMyOrders = async(user_id: number) => {
@@ -83,9 +97,7 @@ const fetchMyOrders = async(user_id: number) => {
     });
 
     if(order.length === 0){
-        const error: any = new Error('No orders found');
-        error.status = 404;
-        throw error;
+        throw createError('No Order Found', 404);
     }
 
     return {
@@ -110,9 +122,7 @@ const fetchOrderById = async(order_id: number, user_id: number) =>{
     });
 
     if (!order) {
-        const error: any = new Error('Order not found');
-        error.status = 404;
-        throw error;
+        throw createError('Order not found', 404);
     }
 
     return{
@@ -131,4 +141,12 @@ const fetchOrderById = async(order_id: number, user_id: number) =>{
     };
 };
 
-export {fetchMyOrders, fetchOrderById, placeNewOrder}
+const emitOrderStatusUpdate = (user_id: number, order_id: number, status: string) => {
+    getIO().to(`user_${user_id} `).emit(SOCKET_EVENTS.ORDER_STATUS_UPDATE), {
+        message: `Your order #${order_id} status updated to: ${status}`,
+        order_id,
+        status,
+    };
+};  
+
+export {fetchMyOrders, fetchOrderById, placeNewOrder, emitOrderStatusUpdate};

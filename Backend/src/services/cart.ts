@@ -3,6 +3,7 @@ import { Cartitem } from "../entites/Cartitem.ts";
 import { Product } from "../entites/Product.ts";
 import { AppDataSource } from "../app.ts";
 import { AddToCartInput, UpdateCartInput } from "../schemas/cart.ts";
+import { createError } from "../utils/error.ts";
 
 const addItemToCart = async(user_id: number, input: AddToCartInput) =>{
     const productRepo = AppDataSource.getRepository(Product);
@@ -11,15 +12,11 @@ const addItemToCart = async(user_id: number, input: AddToCartInput) =>{
         });
 
         if(!product){
-            const error: any = new Error('Product not found');
-            error.status = 404;
-            throw error;
+            throw createError('Product not found', 404);
         }
 
         if(product.stock < input.quantity){
-            const error: any = new Error(`Only ${product.stock} items left in stock`);
-            error.status = 400;
-            throw error;
+            throw createError(`Only ${product.stock} items left in stock`, 404);
         }
 
         const cartRepo = AppDataSource.getRepository(Cart);
@@ -64,9 +61,7 @@ const fetchMyCart = async(user_id: number) =>{
         });
 
         if (!cart) {
-        const error: any = new Error('Cart is empty');
-        error.status = 404;
-        throw error;
+        throw createError('Cart is empty', 404);
         }
 
         const total = cart.cartitem.reduce((sum, item) => {
@@ -99,9 +94,7 @@ const removeItemFromCart = async (user_id: number, cart_item_id: number) => {
   });
 
   if (!cartitem) {
-    const error: any = new Error('Cart item not found');
-    error.status = 404;
-    throw error;
+    throw createError('Cartitem not found', 404);
   }
 
   await cartitemRepo.remove(cartitem);
@@ -122,9 +115,7 @@ const updateCartItemQuantity = async (
   });
 
   if (!cartitem) {
-    const error: any = new Error('Cart item not found');
-    error.status = 404;
-    throw error;
+    throw createError('Cartitem not found', 404);
   }
 
   if (cartitem.product.stock < input.quantity) {

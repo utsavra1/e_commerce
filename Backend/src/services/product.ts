@@ -4,6 +4,7 @@ import { Subcategory } from '../entites/Subcategory.ts';
 import { Categories } from '../entites/Categories.ts';
 import { ILike, Between, MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
 import { ProductFilterInput } from '../schemas/product.ts';
+import { createError } from '../utils/error.ts';
 
 
 const fetchAllProducts = async (filters: ProductFilterInput) => {
@@ -43,7 +44,7 @@ const fetchAllProducts = async (filters: ProductFilterInput) => {
       where: whereConditions, order,
       take: limit,
       skip: (page -1) * limit,
-      relations: ['subcategory', 'subcategory.categories'],
+      relations: ['subcategory', 'subcategory.categories', 'posters'],
     });
 
     return {
@@ -59,15 +60,12 @@ const fetchProductById = async(product_id: number) => {
     const productRepo = await AppDataSource.getRepository(Product);
     const product = await productRepo.findOne({
       where: {product_id},
-      relations: ['subcategory', 'subcategory.categories'],
+      relations: ['subcategory', 'subcategory.categories', 'posters'],
     });
 
     if(!product){
-      const error: any = new Error('Product not found');
-        error.status = 404;
-        throw error; 
+      throw createError('Product not found', 404); 
     }
-
     return product;
 };
 
@@ -78,9 +76,7 @@ const fetchProductsBySubcategory = async(subcategory_id: number) =>{
     });
 
     if(!subcategory){
-      const error: any = new Error('Subcategory not founf');
-      error.status = 401;
-      throw error;
+      throw createError('Subcategory not found', 404);
     }
 
     const productRepo = AppDataSource.getRepository(Product);
@@ -88,7 +84,7 @@ const fetchProductsBySubcategory = async(subcategory_id: number) =>{
       where:{
         subcategory: {subcategory_id}
       },
-      relations: ['subcategory', 'subcategory.categories'],
+      relations: ['subcategory', 'subcategory.categories', 'posters'],
     });
     return { subcategory: subcategory.subcategory_name, total: products.length, products };
 };
@@ -102,9 +98,7 @@ const fetchProductsByCategory = async (category_id: number) =>{
     });
 
     if(!category){
-      const error: any = new Error('Category not found' );
-      error.status = 404;
-      throw error;
+      throw createError('Category not found', 404);
     }
 
     const productRepo = AppDataSource.getRepository(Product);
@@ -112,7 +106,7 @@ const fetchProductsByCategory = async (category_id: number) =>{
       where: {
         subcategory: {categories: {category_id}}
       },
-      relations: ['subcategory', 'subcategory.categories'],
+      relations: ['subcategory', 'subcategory.categories', 'posters'],
     });
     return { category: category.category_name, total: products.length, products };
 };

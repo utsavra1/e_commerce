@@ -14,7 +14,18 @@ const validate = (schema: z.ZodType, source: 'body' | 'query' | 'params' = 'body
         return res.status(400).json({ message: 'Validation failed', errors });
         }
 
-        (req as any)[source] = result.data;
+        if (source === 'body') {
+            req.body = result.data;
+        } else {
+            // req.query and req.params are often getters and cannot be reassigned directly.
+            // We use Object.defineProperty to overwrite the property with the validated data.
+            Object.defineProperty(req, source, {
+                value: result.data,
+                writable: true,
+                configurable: true,
+                enumerable: true
+            });
+        }
         next();
     };
 };

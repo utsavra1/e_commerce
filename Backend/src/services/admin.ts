@@ -10,7 +10,7 @@ import {
   CreateSubcategoryInput,
   UpdateSubcategoryInput,
 } from '../schemas/admin.ts';
-import { NumericType } from "typeorm";
+import { createError } from "../utils/error.ts";
 
 const createNewProduct = async (input: CreateProductInput) => {
     const subcategoryRepo = AppDataSource.getRepository(Subcategory);
@@ -20,9 +20,7 @@ const createNewProduct = async (input: CreateProductInput) => {
         });
 
         if(!subcategory){
-            const error: any = new Error('Subcategory not found');
-            error.status = 404;
-            throw error;
+            throw createError('Subcategory not found', 404);
         }
 
         const product = productRepo.create({
@@ -44,9 +42,7 @@ const updateExistingProduct = async (product_id: number, input: UpdateProductInp
     })
 
     if(!product){
-        const error: any = new Error('Product not found');
-        error.status = 404;
-        throw error;
+        throw createError('Product not found', 404);
 }
 
     if(input.product_name)
@@ -64,9 +60,7 @@ const updateExistingProduct = async (product_id: number, input: UpdateProductInp
         });
 
         if(!subcategory){
-            const error: any = new Error('Subcategory not found');
-            error.status = 404;
-            throw error;
+            throw createError('Subcategory not found', 404);
         }
 
         product.subcategory = subcategory;
@@ -82,9 +76,7 @@ const deleteExistingProduct = async (product_id: number) => {
     });
 
     if(!product){
-        const error: any = new Error('Product not available');
-        error.status = 404;
-        throw error;
+        throw createError('Product not available', 404);
     }
 
     await productRepo.remove(product);
@@ -97,9 +89,7 @@ const createNewCategory = async (input: CreateCategoryInput) => {
     });
 
     if(category){
-        const error: any = new Error('Category already exist');
-        error.status = 404;
-        throw error;
+        throw createError('Category already exist', 404);
     }
 
     const newcategory =  categoryRepo.create({category_name: input.category_name});
@@ -133,15 +123,11 @@ const deleteExistingCategory = async (category_id: number) => {
         });
 
         if(!category){
-            const error: any = new Error('Category do not exist');
-            error.status = 404;
-            throw error;
+            throw createError('Category do not exist', 404);
         }
 
         if (category.subcategory.length > 0) {
-            const error: any = new Error(`Cannot delete category. It has ${category.subcategory.length} subcategories. Delete them first`);
-            error.status = 400;
-            throw error;
+            throw createError(`Cannot delete category. It has ${category.subcategory.length} subcategories. Delete them first`, 404);
         }
         await categoryRepo.remove(category);
 }
@@ -153,9 +139,7 @@ const createNewSubcategory = async ( input: CreateSubcategoryInput) => {
     });
 
     if(!category){
-        const error: any = new Error('Category do not exist');
-        error.status = 404;
-        throw error;
+         throw createError('Category do not exist', 404);
     }
     const subcategory = await subcategoryRepo.findOne({
         where: {subcategory_name: input.subcategory_name,
@@ -164,9 +148,7 @@ const createNewSubcategory = async ( input: CreateSubcategoryInput) => {
     });
 
     if(subcategory){
-        const error: any = new Error('Subcategory already exist');
-        error.status = 404;
-        throw error;
+         throw createError('Subategory already exist', 404);
     }
 
     const newsubcategory = await subcategoryRepo.create({
@@ -186,9 +168,7 @@ const updateExistingSubcategory = async (subcategory_id: number, input: UpdateSu
         });
 
         if(!subcategory){
-            const error: any = new Error('Subcategory do not exist');
-            error.status = 404;
-            throw error;
+             throw createError('Subcategory do not exist', 404);
         }
 
         if(input.subcategory_name)
@@ -201,9 +181,7 @@ const updateExistingSubcategory = async (subcategory_id: number, input: UpdateSu
             });
 
             if (!category) {
-                const error: any = new Error('Category do not exist');
-                error.status = 404;
-                throw error;
+                 throw createError('Category do not exist', 404);
             }
             subcategory.categories = category;
         }
@@ -220,9 +198,7 @@ const deleteExistingSubcategory = async (subcategory_id: number) => {
     });
 
     if (!subcategory) {
-        const error: any = new Error('Subcategory do not exist');
-        error.status = 404;
-        throw error;
+        throw createError('Subcategory do not exist', 404);
     }
 
     

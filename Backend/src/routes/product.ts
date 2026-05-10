@@ -6,7 +6,7 @@ import { ProductFilterSchema } from '../schemas/product.ts';
 
 const router = Router();
 
-router.get('/', authenticate, validate(ProductFilterSchema, 'query'), getAllProducts);
+router.get('/', validate(ProductFilterSchema, 'query'), getAllProducts);
 router.get('/subcategory/:subcategoryId', authenticate, getProductsBySubcategory);
 router.get('/category/:categoryId', authenticate, getProductByCategory);
 router.get('/:id', authenticate, getproductById);

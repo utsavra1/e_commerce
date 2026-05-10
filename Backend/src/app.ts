@@ -1,40 +1,28 @@
 import 'reflect-metadata';
 import express from 'express';
+import { createServer, Server as HttpServer } from 'http';
 import {DataSource} from 'typeorm';
 import { swaggerSpec } from './config/swagger.ts';
 import  swaggerUI  from 'swagger-ui-express';
 import {env} from './config/env.ts'
+import {initSocket} from './socket/socket.ts'
 import authRoutes from './routes/auth.ts'
 import productRoutes from './routes/product.ts'
 import cartRoutes from './routes/cart.ts'
 import orderRoutes from './routes/order.ts'
 import reviewRoutes from './routes/review.ts'
 import adminRoutes from './routes/admin.ts'
+import profileRoutes from './routes/profile.ts'
 import { errorHandler } from './middleware/errorHandler.ts';
+import cors from 'cors';
 
 const app = express();
+app.use(cors());
 app.use(express.json());
-const port = 3000;
 
-
-
-/* app.get('/',async function(req, res){
-
- const userRepo = AppDataSource.getRepository(User);
-/*     const getdata = await userRepo.find() */ 
-   /*  let user: User = new User()
-    user.username = "utsav";
-    user.email = "u@gmail.com";
-    user.password = "t12";
-    user.phone = "9090909090";
-    user.dob = 20600112;
-    user.role = Role.ADMIN;
-
-    const userInserted = await userRepo.save(user);
-
-    res.json(userInserted); 
-});*/
- 
+const httpServer = createServer(app);
+initSocket(httpServer);
+const port = 3000; 
 
 export const AppDataSource = new DataSource({
    type: "postgres",
@@ -49,6 +37,11 @@ export const AppDataSource = new DataSource({
 })
 
 // swagger api 
+app.use(cors({
+    origin: 'http://localhost:3001',
+    credentials: true
+}));
+app.use(express.json());
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 // Routes
@@ -58,6 +51,7 @@ app.use('/cart', cartRoutes);
 app.use('/orders', orderRoutes);
 app.use('/reviews', reviewRoutes);
 app.use('/admin', adminRoutes);
+app.use('/profile', profileRoutes);
 
 
 app.use(errorHandler);
@@ -65,8 +59,8 @@ app.use(errorHandler);
 
 AppDataSource.initialize().then(() => {
     console.log('Database Connection Successful');
-    app.listen(port, () => {
-    console.log(`listening on port${port}`);
+    httpServer.listen(env.port, () => {
+    console.log(`listening on port${env.port}`);
 })
 }).catch((err) => {
     console.log(`Database connection error ${err}`);
