@@ -1,6 +1,4 @@
-import { ProductResponse } from "@/types";
-
-
+import { ProductResponse, FilterParams } from "@/types";
 
 const BASE_URL = 'http://localhost:3000';
 
@@ -10,19 +8,23 @@ const BASE_URL = 'http://localhost:3000';
  * @param limit How many products to show per page (default is 10)
  */
 
-export const fetchProducts = async (page: number = 1, limit: number = 10): Promise<ProductResponse> => {
-    try {
-        const response = await fetch(`${BASE_URL}/products?page=${page}&limit=${limit}`);
-        if (!response.ok) {
-            // This will catch 401, 404, 500 etc.
-            throw new Error(`Server responded with status: ${response.status}`);
-        }
+export const fetchProducts = async (page = 1, limit = 10, filters: FilterParams = {}): Promise<ProductResponse> => {
+    const { search, minPrice, maxPrice, sortBy } = filters;
+    
+    let url = `${BASE_URL}/products?page=${page}&limit=${limit}`;
+    if(search)
+        url += `&search=${search}`;
+    if(minPrice)
+        url += `&minPrice${minPrice}`;
+    if (maxPrice) 
+        url += `&maxPrice=${maxPrice}`;
+    if (sortBy) 
+        url += `&sortBy=${sortBy}`;
 
-        const data: ProductResponse = await response.json();
-        return data;
-        
-    } catch (error) {
-        console.error("API Fetch Error:", error);
-        throw error; 
-    }
-}
+    const response = await fetch(url);
+    if(!response.ok)
+        throw new Error('Failed to fetch products');
+
+    return response.json();
+
+};

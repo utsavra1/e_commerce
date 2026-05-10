@@ -11,5 +11,13 @@ export interface ProductResponse {
   products: Product[];
   total: number;
   page: number;
+  limit: number;
   totalPages: number;
+}
+
+export interface FilterParams {
+  search?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  sortBy?: string;
 }
