@@ -1,15 +1,25 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { fetchProducts } from '@/services/api';
 import { FilterParams, Product } from "@/types";
-import Navbar from "@/layout/Navbar";
+import Navbar from "@/components/layout/Navbar/page";
 import ProductCard from "@/components/Products/ProductCard";
+import { useSearchParams } from "next/navigation";
 
-export default function Home () {
+function HomeContent () {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState<FilterParams>({sortBy: 'newest'});
+  const searchParams = useSearchParams();
+  const [filters, setFilters] = useState<FilterParams>({
+    sortBy: searchParams.get('sortBy') || 'newest',
+    search: searchParams.get('search') || ''
+  });
+
+  useEffect(() =>{
+    const query = searchParams.get('search') || '';
+    setFilters(prev => ({...prev, search: query}));
+  }, [searchParams]);
 
   useEffect(() => {
     setLoading(true);
@@ -29,7 +39,6 @@ export default function Home () {
 
   return(
      <div className="min-h-screen bg-white selection:bg-indigo-100">
-      <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Header with Sort Filter */}
         <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-16">
@@ -54,19 +63,33 @@ export default function Home () {
 
         {/* Product Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-              <div key={i} className="animate-pulse bg-gray-50 h-[400px] rounded-3xl" />
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {products.map(product => (
-              <ProductCard key={product.product_id} product={product} />
-            ))}
-          </div>
-        )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+            <div key={i} className="animate-pulse bg-gray-50 h-[400px] rounded-3xl" />
+          ))}
+        </div>
+      ) : products.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {products.map(product => (
+            <ProductCard key={product.product_id} product={product} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-20">
+          <h2 className="text-2xl font-bold text-gray-400">No products found matching your search.</h2>
+        </div>
+      )}
       </main>
+    </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-white selection:bg-indigo-100">
+      <Suspense fallback={<div className="flex justify-center items-center h-screen">Loading Store...</div>}>
+        <HomeContent />
+      </Suspense>
     </div>
   );
 }

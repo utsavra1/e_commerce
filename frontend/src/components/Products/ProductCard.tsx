@@ -1,9 +1,11 @@
 import { Product } from "@/types";
+import Link from "next/link";
 
 
 export default function ProductCard ({product}: {product: Product}) {
     return(
-        <div className="group bg-white rounded-3xl p-4 border border-transparent hover:border-gray-100 hover:shadow-2xl hover:shadow-indigo-100 transition-all duration-500">
+      <Link href={`/product/${product.product_id}`} className="group block ...">
+      <div className="group bg-white rounded-3xl p-4 border border-transparent hover:border-gray-100 hover:shadow-2xl hover:shadow-indigo-100 transition-all duration-500">
       <div className="relative h-64 bg-gray-50 rounded-2xl overflow-hidden mb-6 flex items-center justify-center">
         {product.posters && product.posters.length > 0 ? (
           <img 
@@ -34,5 +36,6 @@ export default function ProductCard ({product}: {product: Product}) {
         </div>
       </div>
     </div>
+    </Link>
     );
 }

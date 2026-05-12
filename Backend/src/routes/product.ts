@@ -7,8 +7,8 @@ import { ProductFilterSchema } from '../schemas/product.ts';
 const router = Router();
 
 router.get('/', validate(ProductFilterSchema, 'query'), getAllProducts);
-router.get('/subcategory/:subcategoryId', authenticate, getProductsBySubcategory);
-router.get('/category/:categoryId', authenticate, getProductByCategory);
-router.get('/:id', authenticate, getproductById);
+router.get('/subcategory/:subcategoryId', getProductsBySubcategory);
+router.get('/category/:categoryId', getProductByCategory);
+router.get('/:id', getproductById);
 
 export default router;
