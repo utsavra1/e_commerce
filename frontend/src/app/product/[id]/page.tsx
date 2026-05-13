@@ -4,10 +4,13 @@ import { fetchProductById } from "@/services/api";
 import { useState, useEffect } from "react";
 import { Product } from "@/types";
 import { useParams } from "next/navigation";
-import styles from "./page.module.css"
+import styles from "./page.module.css";
+import { Cart } from "@/types";
+import { useCart } from "@/context/CartContext";
 
 export default function ProductDetail(){
     const {id} = useParams();
+    const {addItem} = useCart();
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -85,7 +88,7 @@ export default function ProductDetail(){
                         </div>
 
                         <div className={styles.actions}>
-                            <button className={styles.buyBtn}>
+                            <button onClick={() => addItem(product.product_id, 1)} className={styles.buyBtn}>
                                 Add to Shopping Bag
                             </button>
                         </div>

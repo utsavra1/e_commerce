@@ -1,6 +1,8 @@
 import { API_CONFIG } from "@/config/apiconfig";
-import { ProductResponse, FilterParams, Product, AuthResponse } from "@/types";
-import { LoginInput, RegisterInput } from "@/types";
+import { ProductResponse, FilterParams, Product, AuthResponse, Cart, UpdateCartInput } from "@/types";
+import { LoginInput, RegisterInput, AddToCartInput } from "@/types";
+import { get } from "http";
+import { json } from "stream/consumers";
 
 const BASE_URL = API_CONFIG.BASE_URL;
 
@@ -65,4 +67,63 @@ const loginUser = async (data: LoginInput): Promise<AuthResponse> =>{
     return response.json();
 }
 
-export {fetchProducts, fetchProductById, registerUser, loginUser};
+const fetchMyCart = async(): Promise<Cart> => {
+    const token = getToken();
+    const response = await fetch(`${BASE_URL}/cart/my`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+    });
+    if (!response.ok) 
+        throw new Error('Failed to fetch cart');
+    return response.json();
+}
+
+const addToCart = async(data: AddToCartInput): Promise<{message: string; item: any }> =>{
+    const token = getToken();
+    const response = await fetch(`${BASE_URL}/cart/add`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to add to cart');
+    }
+    return response.json();
+}
+
+const updateCartItem = async(cartItemId: number, quantity: number): Promise<{message: string; item: any}> =>{
+    const token = getToken();
+    const response = await fetch(`${BASE_URL}/cart/update/${cartItemId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({quantity}),
+    });
+    if (!response.ok) 
+        throw new Error('Failed to update cart');
+    return response.json();
+}
+
+const deleteCartItem = async(cartItemId: number): Promise<{message: string}> =>{
+    const token = getToken();
+    const response = await fetch(`${BASE_URL}/cart/delete/${cartItemId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+    });
+     if (!response.ok) 
+        throw new Error('Failed to delete cart');
+    return response.json();
+}
+
+export {fetchProducts, fetchProductById, registerUser, loginUser, fetchMyCart, addToCart, updateCartItem, deleteCartItem};

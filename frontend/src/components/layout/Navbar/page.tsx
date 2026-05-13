@@ -5,10 +5,12 @@ import styles from './page.module.css';
 import { useAuth } from '@/context/AuthContext';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useCart } from '@/context/CartContext';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
+  const { cart } = useCart();
   const router = useRouter();
 
   const handleSearch = (e: React.FormEvent) => {
@@ -49,8 +51,10 @@ export default function Navbar() {
           )}
 
           <div className={styles.cartIcon}>
+            <Link href="/cart" className={styles.cartIcon}>
             <span>🛒</span>
-            <span className={styles.badge}>0</span>
+            <span className={styles.badge}>{cart?.total_items || 0}</span>
+            </Link>
           </div>
         </div>
       </div>

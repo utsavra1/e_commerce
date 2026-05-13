@@ -10,7 +10,7 @@ const router = Router();
 
 router.post('/add', authenticate, validate(addToCartSchema), addToCart)
 router.get('/my', authenticate, getMyCart);
-router.post('/update', authenticate, validate(updateCartSchema), updateCart)
-router.post('/delete', authenticate, removeFromCart)
+router.post('/update/:cart_item_id', authenticate, validate(updateCartSchema), updateCart)
+router.post('/delete/:cart_item_id', authenticate, removeFromCart)
 
 export default router;

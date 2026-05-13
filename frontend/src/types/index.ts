@@ -1,3 +1,4 @@
+import { Orderitem } from '../../../Backend/src/entites/Orderitem';
 export interface Product {
   product_id: number;
   product_name: string;
@@ -46,6 +47,12 @@ export interface RegisterInput {
   dob: string;
 }
 
+export interface LoginInput {
+  email: string;
+  password: string;
+}
+
+
 export interface CartItem {
   cart_item_id: number;
   product_id: number;
@@ -72,7 +79,23 @@ export interface UpdateCartInput {
   quantity: number;
 }
 
-export interface LoginInput {
-  email: string;
-  password: string;
+export interface OrderItem {
+  order_item_id: number;
+  product_id: number;
+  product_name: string;
+  price: string;
+  quantity: number;
+  subtotal: number;
+}
+
+export interface Order {
+  order_id: number;
+  order_date: string;
+  order_description: string;
+  total_amount: number;
+  orderitem: OrderItem[];
+}
+
+export interface PlaceOrderInput {
+  order_description: string;
 }
