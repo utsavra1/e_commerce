@@ -4,6 +4,7 @@ import {
   createCategory, updateCategory, deleteCategory,
   createSubcategory, updateSubcategory, deleteSubcategory,
 } from '../controllers/admin.ts';
+import { getAllOrders } from '../controllers/order.ts'; // Add this import
 import { authenticate } from '../middleware/auth.ts';
 import { authorizeAdmin } from '../middleware/authorize.ts';
 import  validate  from '../middleware/validate.ts';
@@ -16,6 +17,7 @@ import {
 const router = Router();
 
 router.use(authenticate, authorizeAdmin);
+router.get('/orders', getAllOrders); // Add this route
 router.post('/products', validate(createProductSchema), createProduct);
 router.patch('/products/:product_id', validate(updateProductSchema), updateProduct);
 router.delete('/products/:product_id', deleteProduct);

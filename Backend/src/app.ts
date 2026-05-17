@@ -17,7 +17,14 @@ import { errorHandler } from './middleware/errorHandler.ts';
 import cors from 'cors';
 
 const app = express();
-app.use(cors());
+
+app.use(cors({
+    origin: 'http://localhost:3001',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
 const httpServer = createServer(app);
@@ -37,11 +44,6 @@ export const AppDataSource = new DataSource({
 })
 
 // swagger api 
-app.use(cors({
-    origin: 'http://localhost:3001',
-    credentials: true
-}));
-app.use(express.json());
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 // Routes

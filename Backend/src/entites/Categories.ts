@@ -13,6 +13,6 @@ export class Categories{
     category_name: string;
 
     @OneToMany(() => Subcategory, (subcategory) => subcategory.categories)
-    subcategory: Subcategory[];
+    subcategories: Subcategory[];
 
 }

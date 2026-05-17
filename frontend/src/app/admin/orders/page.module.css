@@ -1,0 +1,93 @@
+.container {
+  max-width: 1200px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 40px;
+}
+
+.stats {
+  background: #6366f1;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.tableWrapper {
+  background: white;
+  border-radius: 24px;
+  border: 1px solid #f3f4f6;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  padding: 20px 24px;
+  background: #f9fafb;
+  border-bottom: 2px solid #f3f4f6;
+  color: #6b7280;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.table td {
+  padding: 20px 24px;
+  border-bottom: 1px solid #f3f4f6;
+  font-weight: 600;
+  color: #111827;
+  font-size: 0.95rem;
+}
+
+.customerInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.customerName {
+  font-weight: 800;
+}
+
+.customerEmail {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.amount {
+  color: #6366f1;
+  font-weight: 800;
+}
+
+.viewBtn {
+  background: #f3f4f6;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.viewBtn:hover {
+  background: #e5e7eb;
+}
+
+.loading {
+  padding: 100px;
+  text-align: center;
+  font-weight: 700;
+  color: #6b7280;
+}

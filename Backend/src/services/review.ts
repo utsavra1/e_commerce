@@ -60,7 +60,12 @@ const fetchProductReview = async(product_id: number) => {
     });
 
     if(review.length === 0){
-        throw createError('There is no review for this product', 404);
+      return {
+          product_name: product.product_name,
+          total_reviews: 0,
+          average_rating: 0,
+          reviews: [],
+      }
     }
 
     const averageRating = review.reduce((sum, review) => {

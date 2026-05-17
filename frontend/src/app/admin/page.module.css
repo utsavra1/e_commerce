@@ -1,0 +1,112 @@
+.dashboardContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.header h1 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.header p {
+    color: #7f8c8d;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.statCard {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: transform 0.2s ease;
+}
+
+.statCard:hover {
+    transform: translateY(-5px);
+}
+
+.statIcon {
+    font-size: 2.5rem;
+    background: #f8f9fa;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+.statInfo h3 {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.statInfo p {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 5px 0 0 0;
+}
+
+.recentActivity {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.recentActivity h2 {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+.statusList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.statusItem {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.statusOnline {
+    color: #27ae60;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.statusOnline::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: #27ae60;
+    border-radius: 50%;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    padding: 100px;
+    font-size: 1.2rem;
+    color: #7f8c8d;
+}

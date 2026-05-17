@@ -46,4 +46,13 @@ const getOrderById = async (req: Request, res: Response, next: NextFunction) => 
   }
 };
 
-export {placeOrder, getMyOrder, getOrderById};
+const getAllOrders = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const orders = await orderService.fetchAllOrders();
+        return res.status(200).json(orders);
+    } catch (err) {
+        next(err);
+    }
+};
+
+export {placeOrder, getMyOrder, getOrderById, getAllOrders};

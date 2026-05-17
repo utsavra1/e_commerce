@@ -10,7 +10,7 @@ export class Subcategory{
     @Column()
     subcategory_name: string;
 
-    @ManyToOne("Categories", (categories: Categories) => categories.subcategory)
+    @ManyToOne("Categories", (categories: Categories) => categories.subcategories)
     categories: Categories;
 
     @OneToMany(() => Product, (product) => product.subcategory)

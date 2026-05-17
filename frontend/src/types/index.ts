@@ -6,6 +6,7 @@ export interface Product {
   product_price: string;
   stock: number;
   posters?: { url: string; is_main: boolean }[];
+  subcategory?: Subcategory;
 }
 
 export interface ProductResponse {
@@ -21,6 +22,19 @@ export interface FilterParams {
   minPrice?: string;
   maxPrice?: string;
   sortBy?: string;
+  category_id?: number;
+  subcategory_id?: number;
+}
+
+export interface Category {
+  category_id: number;
+  category_name: string;
+  subcategories: Subcategory[];
+}
+
+export interface Subcategory {
+  subcategory_id: number;
+  subcategory_name: string;
 }
 
 export interface User {
@@ -81,16 +95,17 @@ export interface UpdateCartInput {
 
 export interface OrderItem {
   order_item_id: number;
-  product_id: number;
-  product_name: string;
-  price: string;
+  price: number;
   quantity: number;
-  subtotal: number;
+  subtotal?: number; 
+  product: {
+    product_id: number;
+    product_name: string;
+  };
 }
-
 export interface Order {
   order_id: number;
-  order_date: string;
+  order_date: number;
   order_description: string;
   total_amount: number;
   orderitem: OrderItem[];
@@ -98,4 +113,39 @@ export interface Order {
 
 export interface PlaceOrderInput {
   order_description: string;
+}
+export interface Review {
+  review_id: number;
+  rating: number;
+  comments: string;
+  user: {
+    username: string;
+  };
+}
+export interface CreateReviewInput {
+  rating: number;
+  comments: string;
+}
+
+export interface UpdateProfileInput {
+  username?: string;
+  email?: string;
+  phone?: string;
+  dob?: string;
+}
+
+export interface CreateProductInput {
+  product_name: string;
+  product_description: string;
+  product_price: number;
+  stock: number;
+  subcategory_id: number;
+}
+
+export interface UpdateProductInput {
+  product_name?: string;
+  product_description?: string;
+  product_price?: number;
+  stock?: number;
+  subcategory_id?: number;
 }

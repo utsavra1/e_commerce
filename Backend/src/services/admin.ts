@@ -119,15 +119,15 @@ const deleteExistingCategory = async (category_id: number) => {
     const categoryRepo = AppDataSource.getRepository(Categories);
         const category = await categoryRepo.findOne({
             where: {category_id},
-            relations: ['subcategory'],
+            relations: ['subcategories'],
         });
 
         if(!category){
             throw createError('Category do not exist', 404);
         }
 
-        if (category.subcategory.length > 0) {
-            throw createError(`Cannot delete category. It has ${category.subcategory.length} subcategories. Delete them first`, 404);
+        if (category.subcategories.length > 0) {
+            throw createError(`Cannot delete category. It has ${category.subcategories.length} subcategories. Delete them first`, 404);
         }
         await categoryRepo.remove(category);
 }

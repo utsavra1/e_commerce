@@ -1,0 +1,149 @@
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 80px 20px;
+}
+
+.profileCard {
+  background: white;
+  padding: 40px;
+  border-radius: 32px;
+  border: 1px solid #f3f4f6;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  background: #6366f1; /* Premium Indigo color */
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin: 0 auto 24px;
+}
+
+.username {
+  font-size: 1.75rem;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.email {
+  color: #6b7280;
+  margin-bottom: 40px;
+}
+
+.detailsGrid {
+  display: grid;
+  gap: 24px;
+  text-align: left;
+  margin-bottom: 40px;
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detailItem label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+}
+
+.detailItem span {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.editBtn {
+  width: 100%;
+  padding: 16px;
+  background: #111827;
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.editBtn:hover {
+  background: #6366f1;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .profileCard { background: #1f2937; border-color: #374151; }
+  .username, .detailItem span { color: white !important; }
+  .detailItem label { color: #6b7280; }
+}
+
+.editForm {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inputGroup label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+}
+
+.inputGroup input {
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.saveBtn {
+  flex: 2;
+  padding: 16px;
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cancelBtn {
+  flex: 1;
+  padding: 16px;
+  background: #f3f4f6;
+  color: #4b5563;
+  border: none;
+  border-radius: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (prefers-color-scheme: dark) {
+  .inputGroup input { background: #111827; border-color: #374151; color: white; }
+  .cancelBtn { background: #374151; color: #d1d5db; }
+}

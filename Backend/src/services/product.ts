@@ -8,7 +8,7 @@ import { createError } from '../utils/error.ts';
 
 
 const fetchAllProducts = async (filters: ProductFilterInput) => {
-    const { search, minPrice, maxPrice, sortBy, page, limit } = filters;
+    const { search, minPrice, maxPrice, sortBy, category_id, subcategory_id, page, limit } = filters;
     const productRepo = AppDataSource.getRepository(Product);
 
 
@@ -27,6 +27,12 @@ const fetchAllProducts = async (filters: ProductFilterInput) => {
     }
     else if (maxPrice !== undefined){
       whereConditions.product_price = LessThanOrEqual(maxPrice);
+    }
+
+    if (subcategory_id) {
+      whereConditions.subcategory = { subcategory_id };
+    } else if (category_id) {
+      whereConditions.subcategory = { categories: { category_id } };
     }
 
 
@@ -111,4 +117,11 @@ const fetchProductsByCategory = async (category_id: number) =>{
     return { category: category.category_name, total: products.length, products };
 };
 
-export {fetchAllProducts, fetchProductById, fetchProductsByCategory, fetchProductsBySubcategory};
+const fetchAllCategories = async () => {
+  const categoryRepo = AppDataSource.getRepository(Categories);
+  return await categoryRepo.find({
+    relations: ['subcategories']
+  });
+};
+
+export {fetchAllProducts, fetchProductById, fetchProductsByCategory, fetchProductsBySubcategory, fetchAllCategories};

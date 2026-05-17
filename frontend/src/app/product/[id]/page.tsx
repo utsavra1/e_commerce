@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Product } from "@/types";
 import { useParams } from "next/navigation";
 import styles from "./page.module.css";
-import { Cart } from "@/types";
+import ReviewSection from "@/components/Reviews/ReviewSection";
 import { useCart } from "@/context/CartContext";
 
 export default function ProductDetail(){
@@ -46,7 +46,7 @@ export default function ProductDetail(){
         <div className={styles.container}>
             <main className={styles.wrapper}>
                 <div className={styles.layoutGrid}>
-                    {/* Left Column: Gallery */}
+                
                     <div className={styles.gallery}>
                         <div className={styles.mainImageFrame}>
                             {product.posters?.[0] ? (
@@ -67,7 +67,7 @@ export default function ProductDetail(){
                         )}
                     </div>
 
-                    {/* Right Column: Info */}
+              
                     <div className={styles.infoBox}>
                         <h1 className={styles.title}>
                             {product.product_name}
@@ -94,6 +94,7 @@ export default function ProductDetail(){
                         </div>
                     </div>
                 </div>
+                <ReviewSection productId={Number(id)} />
             </main>
         </div>
     )

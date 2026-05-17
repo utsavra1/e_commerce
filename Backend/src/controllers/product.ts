@@ -63,4 +63,13 @@ const getProductByCategory = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-export {getAllProducts, getproductById, getProductsBySubcategory, getProductByCategory};
+const getCategories = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const categories = await productService.fetchAllCategories();
+    return res.status(200).json(categories);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export {getAllProducts, getproductById, getProductsBySubcategory, getProductByCategory, getCategories};
