@@ -9,6 +9,7 @@ import { Product } from "../entites/Product.ts";
 import { getIO } from '../socket/socket.ts';
 import { SOCKET_EVENTS } from '../socket/socket.event.ts';
 import { createError } from "../utils/error.ts";
+import { sendEmail } from "../utils/mailer.ts";
 
 const placeNewOrder = async (user_id: number, input: PlaceOrderInput) => {
     const orderRepo = AppDataSource.getRepository(Order);
@@ -68,6 +69,8 @@ const placeNewOrder = async (user_id: number, input: PlaceOrderInput) => {
     }
 
     await cartitemRepo.delete(cart.cartitem);
+    const user = await userRepo.findOne({ where: { user_id } });
+
 
     const orderSummary = {
     order_id: order.order_id,
@@ -80,6 +83,11 @@ const placeNewOrder = async (user_id: number, input: PlaceOrderInput) => {
       subtotal: Number(item.product.product_price) * item.quantity,
     })),
   };
+
+  if(user?.email){
+    sendEmail(user.email, orderSummary).catch(err => console.error(err));
+  }
+
   // socket to notify admin about order in real time
   getIO().to('admin_room').emit(SOCKET_EVENTS.NEW_ORDER), {
     message: `New order #${order.order_id} placed`,

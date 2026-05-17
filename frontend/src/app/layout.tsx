@@ -5,6 +5,8 @@ import Navbar from "@/components/layout/Navbar/page";
 import Footer from "@/components/layout/Footer/page";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
+import { SocketProvider } from '@/context/SocketContext';
+import { ToastContainer } from "react-toastify";
 
 const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
@@ -22,6 +24,8 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <CartProvider>
+            <SocketProvider>
+               {children}
           <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             
             <Navbar />
@@ -30,6 +34,8 @@ export default function RootLayout({
             </main>
             <Footer />
           </div>
+              <ToastContainer />
+            </SocketProvider>
           </CartProvider>
         </AuthProvider>
       </body>

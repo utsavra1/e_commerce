@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { email } from 'zod';
 dotenv.config();
 
 const getEnv = (key: string, fallback?: string): string => {
@@ -24,6 +25,10 @@ export const env = {
         secret: getEnv('JWT_SECRET'),
         expiresIn: getEnv('JWT_EXPIRES_IN', '1d'),
     },
+    email: {
+      user: process.env['EMAIL_USER'] || '',
+      pass: process.env['EMAIL_PASS'] || '',
+    }
 };
 
 
