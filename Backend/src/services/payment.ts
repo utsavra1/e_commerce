@@ -13,9 +13,9 @@ export const generateEsewaSignature = (SecretKey: string, data: string): string 
 };
 
 export const ESEWA_CONFIG = {
-    merchant_id: 'EPAYTEST', 
-    secret_key: '8gBm/:&EnhH.1/q', 
-    demo_url: 'https://rc-epay.esewa.com.np/api/epay/main/v2/form',
-    success_url: 'http://localhost:3001/checkout/success',
-    failure_url: 'http://localhost:3001/checkout/failure',
+    merchant_id: process.env['ESEWA_MERCHANT_ID'] || 'EPAYTEST', 
+    secret_key: process.env['ESEWA_SECRET_KEY'] || '8gBm/:&EnhH.1/q', 
+    demo_url: process.env['ESEWA_URL'] || 'https://rc-epay.esewa.com.np/api/epay/main/v2/form',
+    success_url: process.env['ESEWA_SUCCESS_URL'] || 'http://localhost:3001/checkout/success',
+    failure_url: process.env['ESEWA_FAILURE_URL'] || 'http://localhost:3001/checkout/failure',
 };
