@@ -1,5 +1,5 @@
 import { Order } from "../entites/Order.ts";
-import { AppDataSource } from "../app.ts";
+import { AppDataSource } from "../config/database.ts";
 import { PlaceOrderInput } from "../schemas/order.ts";
 import { Cart } from "../entites/Cart.ts";
 import { User } from "../entites/User.ts";
@@ -76,23 +76,20 @@ const placeNewOrder = async (user_id: number, input: PlaceOrderInput) => {
     order_id: order.order_id,
     order_description: order.order_description,
     total_amount: order.total_amount,
-    items: cart.cartitem.map((item) => ({
+    orderitem: cart.cartitem.map((item) => ({
       product_name: item.product.product_name,
       quantity: item.quantity,
       price: Number(item.product.product_price),
       subtotal: Number(item.product.product_price) * item.quantity,
     })),
   };
-
-  if(user?.email){
-    sendEmail(user.email, orderSummary).catch(err => console.error(err));
-  }
+  
 
   // socket to notify admin about order in real time
-  getIO().to('admin_room').emit(SOCKET_EVENTS.NEW_ORDER), {
+  getIO().to('admin_room').emit(SOCKET_EVENTS.NEW_ORDER, {
     message: `New order #${order.order_id} placed`,
     ...orderSummary,
-  }
+  });
   return orderSummary;
 
 };
@@ -119,15 +116,18 @@ const fetchMyOrders = async(user_id: number) => {
   };
 };
 
-const fetchOrderById = async(order_id: number, user_id: number) =>{
+const fetchOrderById = async(order_id: number, user_id: number, role?: string) =>{
     const orderRepo = AppDataSource.getRepository(Order);
-    const order = await orderRepo.findOne({
-      where: {
-        order_id,
-        user: { user_id },
-      },
-      relations: ['orderitem', 'orderitem.product'],
-    });
+    const findOptions: any = {
+      where: { order_id },
+      relations: ['orderitem', 'orderitem.product', 'user'],
+    };
+
+    if (role !== 'admin') {
+      findOptions.where.user = { user_id };
+    }
+
+    const order = await orderRepo.findOne(findOptions);
 
     if (!order) {
         throw createError('Order not found', 404);
@@ -139,9 +139,11 @@ const fetchOrderById = async(order_id: number, user_id: number) =>{
         order_date: order.order_date,
         total_amount: order.total_amount,
         total_items: order.orderitem.length,
-        items: order.orderitem.map((item) => ({
+        orderitem: order.orderitem.map((item) => ({
             order_item_id: item.order_item_id,
-            product_name: item.product.product_name,
+            product: {
+                product_name: item.product.product_name
+            },
             quantity: item.quantity,
             price: item.price,           // price snapshot at time of purchase
             subtotal: Number(item.price) * item.quantity,
@@ -149,12 +151,20 @@ const fetchOrderById = async(order_id: number, user_id: number) =>{
     };
 };
 
+const fetchAllOrders = async () => {
+    const orderRepo = AppDataSource.getRepository(Order);
+    return await orderRepo.find({
+        relations: ['user', 'orderitem', 'orderitem.product'],
+        order: { order_date: 'DESC' }
+    });
+};
+
 const emitOrderStatusUpdate = (user_id: number, order_id: number, status: string) => {
-    getIO().to(`user_${user_id} `).emit(SOCKET_EVENTS.ORDER_STATUS_UPDATE), {
+    getIO().to(`user_${user_id}`).emit(SOCKET_EVENTS.ORDER_STATUS_UPDATE, {
         message: `Your order #${order_id} status updated to: ${status}`,
         order_id,
         status,
-    };
+    });
 };  
 
-export {fetchMyOrders, fetchOrderById, placeNewOrder, emitOrderStatusUpdate};
+export {fetchMyOrders, fetchOrderById, placeNewOrder, emitOrderStatusUpdate, fetchAllOrders};

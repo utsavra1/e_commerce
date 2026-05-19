@@ -1,4 +1,4 @@
-import { AppDataSource } from '../app.ts';
+import { AppDataSource } from '../config/database.ts';
 import { Review } from '../entites/Review.ts';
 import { Product } from '../entites/Product.ts';
 import { CreateReviewInput } from '../schemas/review.ts';
@@ -80,7 +80,9 @@ const fetchProductReview = async(product_id: number) => {
             review_id: review.review_id,
             rating: review.rating,
             comments: review.comments,
-            reviewed_by: review.user.username,
+            user: {
+                username: review.user.username
+            },
       })),
     }
 }

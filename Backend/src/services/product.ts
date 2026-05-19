@@ -1,4 +1,4 @@
-import { AppDataSource } from '../app.ts';
+import { AppDataSource } from '../config/database.ts';
 import { Product } from '../entites/Product.ts'
 import { Subcategory } from '../entites/Subcategory.ts';
 import { Categories } from '../entites/Categories.ts';

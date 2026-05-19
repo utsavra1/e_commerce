@@ -1,10 +1,10 @@
 'use client';
 
-import React, {createContext, useContext, useState, useEffect, ReactNode} from "react";
+import React, {createContext, useContext, useState, useEffect, ReactNode, useMemo, useCallback} from "react";
 import { Cart } from "@/types";
 import { fetchMyCart, updateCartItem as apiUpdateCartItem, deleteCartItem as apiDeleteCartItem, addToCart as apiAddToCart} from "@/services/api";
 import { useAuth } from "./AuthContext";
-import { authenticate } from '../../../Backend/src/middleware/auth';
+import { toast } from 'react-toastify';
 
 interface CartContextType {
     cart: Cart | null;
@@ -22,7 +22,7 @@ export const CartProvider = ({ children }: {children: ReactNode}) =>{
     const [loading, setLoading] = useState(false);
     const {isAuthenticated } = useAuth();
 
-    const refreshCart = async() =>{
+    const refreshCart = useCallback(async() =>{
         if(!isAuthenticated){
             setCart(null);
             return;
@@ -37,41 +37,55 @@ export const CartProvider = ({ children }: {children: ReactNode}) =>{
         } finally {
             setLoading(false);
         }
-    };
+    }, [isAuthenticated]);
 
     useEffect(() =>{
         refreshCart();
-    }, [isAuthenticated]);
+    }, [refreshCart]);
 
-    const addItem = async(productId: number, quantity: number) =>{
+    const addItem = useCallback(async(productId: number, quantity: number) =>{
+        if (!isAuthenticated) {
+            toast.warning('Please login to add items to cart', { position: 'top-center' });
+            return;
+        }
         try {
             await apiAddToCart({product_id: productId, quantity});
+            toast.success('Item added to cart', { position: 'bottom-right' });
             await refreshCart();
         } catch (error) {
-            alert(error instanceof Error ? error.message : 'Failed to add to cart');
+            toast.error(error instanceof Error ? error.message : 'Failed to add to cart');
         }
-    };
+    }, [refreshCart, isAuthenticated]);
 
-    const updateItem = async(cartItemId: number, quantity: number) =>{
+    const updateItem = useCallback(async(cartItemId: number, quantity: number) =>{
         try {
             await apiUpdateCartItem(cartItemId, quantity);
             await refreshCart();
         } catch (error) {
-             alert(error instanceof Error ? error.message : 'Failed to update cart');
+             toast.error(error instanceof Error ? error.message : 'Failed to update cart');
         }
-    };
+    }, [refreshCart]);
 
-    const deleteItem = async(cartItemID: number) =>{
+    const deleteItem = useCallback(async(cartItemID: number) =>{
         try {
             await apiDeleteCartItem(cartItemID);
             await refreshCart();
         } catch (error) {
             console.error('Error removing from cart:', error);
         }
-    };
+    }, [refreshCart]);
+
+    const value = useMemo(() => ({
+        cart,
+        loading,
+        addItem,
+        updateItem,
+        deleteItem,
+        refreshCart
+    }), [cart, loading, addItem, updateItem, deleteItem, refreshCart]);
 
     return(
-        <CartContext.Provider value={{ cart, loading, addItem, updateItem, deleteItem, refreshCart }}>
+        <CartContext.Provider value={value}>
             {children}
         </CartContext.Provider>
     );

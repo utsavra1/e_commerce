@@ -1,7 +1,7 @@
 import { Cart } from "../entites/Cart.ts";
 import { Cartitem } from "../entites/Cartitem.ts";
 import { Product } from "../entites/Product.ts";
-import { AppDataSource } from "../app.ts";
+import { AppDataSource } from "../config/database.ts";
 import { AddToCartInput, UpdateCartInput } from "../schemas/cart.ts";
 import { createError } from "../utils/error.ts";
 
@@ -61,8 +61,13 @@ const fetchMyCart = async(user_id: number) =>{
         });
 
         if (!cart) {
-        throw createError('Cart is empty', 404);
-        }
+          return {
+              cart_id: 0,
+              total_items: 0,
+              total_price: 0,
+              items: []
+          };
+}
 
         const total = cart.cartitem.reduce((sum, item) => {
             return sum + Number(item.product.product_price) * item.quantity;

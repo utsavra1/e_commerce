@@ -16,6 +16,10 @@ export const createProductSchema = z.object({
   subcategory_id: z.number({ message: 'Subcategory ID must be a number' })
     .int()
     .positive(),
+  product_image: z.string()
+  .url('Invalid image URL')
+  .optional()
+  .or(z.literal('')),
 });
 
 export const updateProductSchema = z.object({
@@ -38,6 +42,7 @@ export const updateProductSchema = z.object({
     .int()
     .positive()
     .optional(),
+  product_image: z.string().url('Invalid image URL').optional().or(z.literal('')),
 });
 
 // ── category schemas ──────────────────────────────────────────────────

@@ -15,7 +15,7 @@ export default function OrderPage () {
         const loadOrders = async () => {
             try {
                 const data = await fetchMyOrders();
-                setOrders(data);
+                setOrders(data.orders);
                 
             } catch (error) {
                 console.error(error);
@@ -36,16 +36,16 @@ export default function OrderPage () {
                 <p>You haven't placed any orders yet.</p>
             ): (
                 <div className={styles.orderGrid}>
-                    {orders.map((orders) => (
-                        <div key={orders.order_id} className={styles.orderCard}>
+                    {orders.map((order) => (
+                        <div key={order.order_id} className={styles.orderCard}>
                             <div className={styles.header}>
-                                <span> Order # {orders.order_id}</span>
-                                <span className={styles.date}>{new Date(orders.order_date).toLocaleDateString()}</span>
+                                <span> Order # {order.order_id}</span>
+                                <span className={styles.date}>{new Date(order.order_date).toLocaleDateString()}</span>
                             </div>
-                            <p className={styles.desc}>{orders.order_description}</p>
+                            <p className={styles.desc}>{order.order_description}</p>
                             <div className={styles.footer}>
-                                <span className={styles.amount}>Total: Rs {orders.total_amount}</span>
-                                <Link href={`/profile/orders/${orders.order_id}`} className={styles.viewBtn}>
+                                <span className={styles.amount}>Total: Rs {order.total_amount}</span>
+                                <Link href={`/profile/orders/${order.order_id}`} className={styles.viewBtn}>
                                     View Details
                                 </Link>
                             </div>

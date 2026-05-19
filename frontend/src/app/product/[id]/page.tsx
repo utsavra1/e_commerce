@@ -73,7 +73,7 @@ export default function ProductDetail(){
                             {product.product_name}
                         </h1>
                         <p className={styles.price}>
-                            ${product.product_price}
+                            Rs {product.product_price}
                         </p>
                         <p className={styles.description}>
                             {product.product_description}

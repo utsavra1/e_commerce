@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { PlaceOrderInput } from "../schemas/order.ts";
 import * as orderService from "../services/order.ts";
+import {fetchMyOrders} from "../services/order.ts";
 
 const placeOrder = async(req: Request, res: Response, next: NextFunction) => {
     try {
@@ -33,12 +34,13 @@ const getOrderById = async (req: Request, res: Response, next: NextFunction) => 
   try {
     const user_id = (req as any).user.user_id;
     const order_id = parseInt(req.params['order_id'] as string, 10);
+    const role = (req as any).user.role;
 
     if (isNaN(order_id)) {
       return res.status(400).json({ message: 'Invalid order ID' });
     }
 
-    const order = await orderService.fetchOrderById(order_id, user_id);
+    const order = await orderService.fetchOrderById(order_id, user_id, role);
 
     return res.status(200).json(order);
   } catch (err) {

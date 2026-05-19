@@ -1,4 +1,4 @@
-import { AppDataSource } from '../app.js'
+import { AppDataSource } from '../config/database.ts';
 import bcrypt from 'bcrypt';
 import { generateToken } from '../utils/jwt.js';
 import { Role, User } from '../entites/User.js';
@@ -51,6 +51,7 @@ export const loginUser = async (input: LoginInput) => {
     }
 
     const token = generateToken({ user_id: user.user_id, email: user.email, role: user.role });
+    const { password: _, ...userWithoutPassword } = user;
+    return { token, user: userWithoutPassword }; 
 
-    return {token};
 };

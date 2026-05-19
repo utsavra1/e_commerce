@@ -1,4 +1,3 @@
-import { Orderitem } from '../../../Backend/src/entites/Orderitem';
 export interface Product {
   product_id: number;
   product_name: string;
@@ -127,6 +126,13 @@ export interface CreateReviewInput {
   comments: string;
 }
 
+export interface ReviewResponse {
+  product_name: string;
+  total_reviews: number;
+  average_rating: number;
+  reviews: Review[];
+}
+
 export interface UpdateProfileInput {
   username?: string;
   email?: string;
@@ -140,6 +146,7 @@ export interface CreateProductInput {
   product_price: number;
   stock: number;
   subcategory_id: number;
+  product_image?: string;
 }
 
 export interface UpdateProductInput {
@@ -148,4 +155,5 @@ export interface UpdateProductInput {
   product_price?: number;
   stock?: number;
   subcategory_id?: number;
+  product_image?: string;
 }

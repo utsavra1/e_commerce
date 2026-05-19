@@ -1,4 +1,4 @@
-import { AppDataSource } from "../app.ts";
+import { AppDataSource } from "../config/database.ts";
 import { Product } from '../entites/Product.ts';
 import { Categories } from '../entites/Categories.ts';
 import { Subcategory } from '../entites/Subcategory.ts';
@@ -11,64 +11,96 @@ import {
   UpdateSubcategoryInput,
 } from '../schemas/admin.ts';
 import { createError } from "../utils/error.ts";
+import { Poster } from "../entites/Poster.ts";
 
 const createNewProduct = async (input: CreateProductInput) => {
     const subcategoryRepo = AppDataSource.getRepository(Subcategory);
-        const productRepo = AppDataSource.getRepository(Product);
-        const subcategory = await subcategoryRepo.findOne({
-            where: {subcategory_id: input.subcategory_id},
+    const productRepo = AppDataSource.getRepository(Product);
+    const posterRepo = AppDataSource.getRepository(Poster);
+    
+    const subcategory = await subcategoryRepo.findOne({
+        where: { subcategory_id: input.subcategory_id },
+    });
+
+    if (!subcategory) {
+        throw createError('Subcategory not found', 404);
+    }
+
+    const product = productRepo.create({
+        product_name: input.product_name,
+        product_description: input.product_description,
+        product_price: input.product_price,
+        stock: input.stock,
+        subcategory
+    });
+    
+    await productRepo.save(product);
+
+    if (input.product_image) {
+        const poster = posterRepo.create({
+            url: input.product_image,
+            is_main: true,
+            product: product
         });
-
-        if(!subcategory){
-            throw createError('Subcategory not found', 404);
-        }
-
-        const product = productRepo.create({
-            product_name: input.product_name,
-            product_description: input.product_description,
-            product_price: input.product_price,
-            stock: input.stock,
-            subcategory
-        });
-        await productRepo.save(product);
-        return product;
-
+        await posterRepo.save(poster);
+    }
+    
+    return product;
 };
+
 const updateExistingProduct = async (product_id: number, input: UpdateProductInput) => {
     const productRepo = AppDataSource.getRepository(Product);
     const subcategoryRepo = AppDataSource.getRepository(Subcategory);
+    const posterRepo = AppDataSource.getRepository(Poster);
+
     const product = await productRepo.findOne({
-        where: {product_id},
-    })
+        where: { product_id },
+        relations: ['subcategory']
+    });
 
-    if(!product){
+    if (!product) {
         throw createError('Product not found', 404);
-}
+    }
 
-    if(input.product_name)
-        product.product_name = input.product_name;
-    if(input.product_description)
-        product.product_description = input.product_description;
-    if(input.product_price)
-        product.product_price = input.product_price;
-    if(input.stock !== undefined)
-        product.stock = input.stock;
+    if (input.product_name) product.product_name = input.product_name;
+    if (input.product_description) product.product_description = input.product_description;
+    if (input.product_price) product.product_price = input.product_price;
+    if (input.stock !== undefined) product.stock = input.stock;
 
-    if(input.subcategory_id){
+    if (input.subcategory_id) {
         const subcategory = await subcategoryRepo.findOne({
-            where: {subcategory_id : input.subcategory_id},
+            where: { subcategory_id: input.subcategory_id },
         });
 
-        if(!subcategory){
+        if (!subcategory) {
             throw createError('Subcategory not found', 404);
         }
 
         product.subcategory = subcategory;
     }
 
+    if (input.product_image !== undefined) {
+        let poster = await posterRepo.findOne({
+            where: { product: { product_id }, is_main: true }
+        });
+
+        if (poster) {
+            poster.url = input.product_image;
+            await posterRepo.save(poster);
+        } else if (input.product_image) {
+            const newPoster = posterRepo.create({
+                url: input.product_image,
+                is_main: true,
+                product: product
+            });
+            await posterRepo.save(newPoster);
+        }
+    }
+
     await productRepo.save(product);
     return product;
 };
+
 const deleteExistingProduct = async (product_id: number) => {
     const productRepo = AppDataSource.getRepository(Product);
     const product = await productRepo.findOne({

@@ -106,3 +106,33 @@
   .form { background: #111827; border-color: #374151; }
   .form select, .form textarea { background: #1f2937; color: white; border-color: #374151; }
 }
+.starRatingInput {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+
+.starFilled {
+  color: #fbbf24; /* Gold */
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.starEmpty {
+  color: #d1d5db; /* Light Gray */
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.starFilled:hover, .starEmpty:hover {
+  transform: scale(1.2);
+}
+
+.ratingText {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-left: 10px;
+  font-weight: 600;
+}

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { registerUser } from '@/services/api';
 import styles from '../login/page.module.css'; 
 import { RegisterInput } from '@/types';
+import { toast } from 'react-toastify';
 
 export default function RegisterPage(){
     const [form, setForm] = useState({ username: '', email: '', password: '', phone: '', dob: '' })
@@ -13,9 +14,10 @@ export default function RegisterPage(){
         e.preventDefault();
         try {
             await registerUser(form);
+            toast.success("Account created! Please sign in.");
             router.push('/login');
         } catch (err) {
-            alert("Registration failed. Please check your details.");
+            toast.error("Registration failed. Please check your details.");
         }
     };
 

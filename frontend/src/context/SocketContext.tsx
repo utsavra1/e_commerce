@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode, useMemo } from 'react';
 import io from 'socket.io-client';
 import { useAuth } from './AuthContext';
 import { toast } from 'react-toastify';
@@ -12,11 +12,17 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     const [socket, setSocket] = useState<any>(null);
 
     useEffect(() =>{
-        if (!token)
+        if (!token) {
+            setSocket(null);
             return;
+        }
 
         const newSocket = io('http://localhost:3000', {
             auth: {token},
+        });
+
+        newSocket.on('connect', () => {
+            console.log('Socket connected');
         });
 
         if (user?.role === 'admin'){
@@ -35,8 +41,10 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
         };
     }, [token, user?.role]);
 
+    const value = useMemo(() => ({ socket }), [socket]);
+
     return (
-        <SocketContext.Provider value={{socket}}>
+        <SocketContext.Provider value={value}>
             {children}
         </SocketContext.Provider>
     );

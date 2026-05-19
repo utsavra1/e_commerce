@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Order } from '@/types';
 import { fetchAdminOrders } from '@/services/api';
 import styles from './page.module.css';
+import Link from 'next/link';
 
 export default function AdminOrdersPage() {
     const [orders, setOrders] = useState<Order[]>([]);
@@ -57,7 +58,9 @@ export default function AdminOrdersPage() {
                                 <td className={styles.amount}>Rs {order.total_amount}</td>
                                 <td>{order.orderitem.length} Items</td>
                                 <td>
-                                    <button className={styles.viewBtn}>Details</button>
+                                    <Link href={`/admin/orders/${order.order_id}`} className={styles.viewBtn}>
+                                        Details
+                                    </Link>
                                 </td>
                             </tr>
                         ))}

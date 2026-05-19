@@ -2,7 +2,7 @@ import { API_CONFIG } from "@/config/apiconfig";
 import { 
     ProductResponse, FilterParams, Product, AuthResponse, Cart, 
     UpdateCartInput, PlaceOrderInput, CreateReviewInput, UpdateProfileInput, 
-    Category, CreateProductInput, UpdateProductInput, Order, Review,
+    Category, CreateProductInput, UpdateProductInput, Order, Review, ReviewResponse,
     RegisterInput, LoginInput, AddToCartInput 
 } from "@/types";
 import { User } from "@/types";
@@ -145,7 +145,7 @@ const placeOrder = async (data: PlaceOrderInput): Promise<{message: string; orde
     return response.json();
 }
 
-const fetchMyOrders = async (): Promise<Order[]> =>{
+const fetchMyOrders = async (): Promise<{ total_orders: number; orders: Order[] }> =>{
     const token = getToken();
     const response = await fetch(`${BASE_URL}/orders/me`, {
         method: 'GET',
@@ -173,7 +173,7 @@ const fetchOrderById = async (orderId: number): Promise<Order> =>{
     return response.json();
 }
 
-const fetchReviewsByProductId = async (productId: number): Promise<Review[]> =>{
+const fetchReviewsByProductId = async (productId: number): Promise<ReviewResponse> =>{
     const response = await fetch(`${BASE_URL}/reviews/${productId}`);
     if (!response.ok) 
         throw new Error('Failed to fetch reviews');
@@ -306,6 +306,54 @@ const fetchAdminOrders = async (): Promise<Order[]> => {
     return response.json();
 };
 
+const createAdminSubcategory = async (categoryId: number, name: string): Promise<any> => {
+    const token = getToken();
+    const response = await fetch(`${BASE_URL}/admin/subcategories`, {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json', 
+            'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({ category_id: categoryId, subcategory_name: name }),
+    });
+    if (!response.ok) throw new Error('Failed to create subcategory');
+    return response.json();
+};
+
+const initiateEsewaPayment = async (order_id: number) => {
+    const token = getToken();
+    const response = await fetch(`${BASE_URL}/payment/initiate`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ order_id }),
+    });
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to initiate payment');
+    }
+    return response.json();
+};
+
+const verifyEsewaPayment = async (data: string) => {
+    const token = getToken();
+    const response = await fetch(`${BASE_URL}/payment/verify`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ data }),
+    });
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Payment verification failed');
+    }
+    return response.json();
+};
+
 export {
     fetchProducts,
     fetchProductById,
@@ -328,5 +376,8 @@ export {
     fetchAdminOrders,
     updateAdminProduct,
     createAdminCategory,
-    deleteAdminCategory
+    deleteAdminCategory,
+    initiateEsewaPayment,
+    verifyEsewaPayment,
+    createAdminSubcategory
 };

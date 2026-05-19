@@ -1,4 +1,4 @@
-import { AppDataSource } from "../app.ts";
+import { AppDataSource } from "../config/database.ts";
 import { User } from "../entites/User.ts";
 import bcrypt from "bcryptjs";
 import { createError } from "../utils/error.ts";

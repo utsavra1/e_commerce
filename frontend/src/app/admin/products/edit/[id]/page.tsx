@@ -16,8 +16,11 @@ export default function EditProductPage() {
         product_description: '',
         product_price: 0,
         stock: 0,
-        subcategory_id: undefined
+        subcategory_id: undefined,
+        product_image: ''
     });
+
+
 
     useEffect(() => {
         const loadData = async () => {
@@ -33,7 +36,8 @@ export default function EditProductPage() {
                     product_description: product.product_description,
                     product_price: Number(product.product_price),
                     stock: product.stock,
-                    subcategory_id: product.subcategory?.subcategory_id
+                    subcategory_id: product.subcategory?.subcategory_id,
+                    product_image: product.posters?.[0]?.url || ''
                 });
             } catch (error) {
                 console.error(error);
@@ -98,6 +102,13 @@ export default function EditProductPage() {
                 </div>
 
                 <div className={styles.inputGroup}>
+                    <label>Product Image URL</label>
+                        <input 
+                            name="product_image" 
+                            value={formData.product_image || ''} 
+                            onChange={handleChange} 
+                            placeholder="https://example.com/image.jpg"
+                        />
                     <label>Subcategory</label>
                     <select name="subcategory_id" value={formData.subcategory_id || ''} onChange={handleChange} required>
                         <option value="">Select a subcategory</option>

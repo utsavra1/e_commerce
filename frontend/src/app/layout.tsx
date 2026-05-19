@@ -7,6 +7,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { SocketProvider } from '@/context/SocketContext';
 import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
@@ -25,15 +26,13 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <SocketProvider>
-               {children}
-          <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-            
-            <Navbar />
-            <main style={{ flex: 1 }}>
-              {children}
-            </main>
-            <Footer />
-          </div>
+              <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                <Navbar />
+                <main style={{ flex: 1 }}>
+                  {children}
+                </main>
+                <Footer />
+              </div>
               <ToastContainer />
             </SocketProvider>
           </CartProvider>

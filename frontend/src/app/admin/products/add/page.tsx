@@ -16,7 +16,8 @@ export default function AddProductPage() {
         product_description: '',
         product_price: 0,
         stock: 0,
-        subcategory_id: 0
+        subcategory_id: 0,
+        product_image: ''
     });
 
     useEffect(() => {
@@ -109,6 +110,16 @@ export default function AddProductPage() {
                             required 
                         />
                     </div>
+                </div>
+
+                <div className={styles.inputGroup}>
+                    <label>Product Image URL</label>
+                    <input 
+                        name="product_image" 
+                        value={formData.product_image || ''} 
+                        onChange={handleChange} 
+                        placeholder="https://example.com/image.jpg"
+                    />
                 </div>
 
                 <div className={styles.inputGroup}>

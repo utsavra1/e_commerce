@@ -6,7 +6,7 @@ const getMyProfile = async(req: Request, res: Response, next: NextFunction) =>{
     try {
         const user_id = (req as any).user.user_id;
         const result = await fetchMyProfile(user_id);
-        return res.status(200).json(result);
+        return res.status(200).json({user: result});
     } catch (err) {
         next(err);
     }

@@ -47,7 +47,7 @@ export default function CartPage () {
                                 </div>
                                 <button onClick={() => deleteItem(item.cart_item_id)} className={styles.removeBtn}>Remove</button>
                             </div>
-                            <p className={styles.subtotal}>${item.subtotal}</p>
+                            <p className={styles.subtotal}>Rs {item.subtotal}</p>
                         </div>
                     ))}
                     </div>
@@ -59,9 +59,11 @@ export default function CartPage () {
                             </div>
                             <div className={styles.totalRow}>
                                 <span>Total Price</span>
-                                <span>${cart.total_price}</span>
+                                <span>Rs {cart.total_price}</span>
                         </div>
-                        <button className={styles.checkoutBtn}>Proceed to Checkout</button>
+                        <Link href="/checkout" className={styles.checkoutBtn}>
+                            Proceed to Checkout
+                        </Link>
                 </div>
             </div>
         </div>

@@ -146,3 +146,33 @@
   background-color: #fef2f2;
   border-color: #fecaca;
 }
+
+.avatarLink {
+  text-decoration: none;
+}
+
+.avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+}
+
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}

@@ -9,14 +9,14 @@ import React from 'react';
 
 export default function ReviewSection ({productId}: {productId: number}) {
     const [rating, setRating] = useState(5);
-    const isAuthenticated = useAuth();
+    const { isAuthenticated } = useAuth();
     const [review, setReview] = useState<Review[]>([]);
-    const [comments, isComment] = useState('');
+    const [comments, setComments] = useState('');
 
     const loadReview = async() =>{
         try {
             const data = await fetchReviewsByProductId(productId);
-            setReview(data);
+            setReview(data.reviews || []);
         } catch (error) {
             console.error(error);
         }
@@ -31,7 +31,7 @@ export default function ReviewSection ({productId}: {productId: number}) {
         try {
             await createReview (productId, {rating, comments});
             setRating(5);
-            isComment('');
+            setComments('');
             loadReview();
             alert('Review Submitted successfully');
 
@@ -62,12 +62,20 @@ export default function ReviewSection ({productId}: {productId: number}) {
             {isAuthenticated ? (
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <h3>Write a Review</h3>
-                    <select value={rating} onChange={(e) => setRating(Number(e.target.value))}>
-                        {[5,4,3,2,1].map(n => <option key={n} value={n}>{n} Stars</option>)}
-                    </select>
+                    <div className={styles.starRatingInput}>
+                        {[1, 2, 3, 4, 5].map((star) => (
+                            <span
+                                key={star}
+                                className={star <= rating ? styles.starFilled : styles.starEmpty}
+                                onClick={() => setRating(star)}>
+                                ★
+                            </span>
+                        ))}
+                        <span className={styles.ratingText}>{rating} / 5 Stars</span>
+                    </div>
                     <textarea 
                     value={comments} 
-                    onChange={(e) => isComment(e.target.value)} 
+                    onChange={(e) => setComments(e.target.value)} 
                     placeholder="What did you think of this product?"
                     required
                     />

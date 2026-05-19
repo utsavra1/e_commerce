@@ -38,7 +38,7 @@ export default function ProductCard ({product}: {product: Product}) {
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
             <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-tighter">Price</span>
-            <span className="text-xl font-black text-gray-900">${product.product_price}</span>
+            <span className="text-xl font-black text-gray-900">Rs {product.product_price}</span>
           </div>
           <button 
               onClick={handleAddToCart}

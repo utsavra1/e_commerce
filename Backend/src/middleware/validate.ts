@@ -17,8 +17,6 @@ const validate = (schema: z.ZodType, source: 'body' | 'query' | 'params' = 'body
         if (source === 'body') {
             req.body = result.data;
         } else {
-            // req.query and req.params are often getters and cannot be reassigned directly.
-            // We use Object.defineProperty to overwrite the property with the validated data.
             Object.defineProperty(req, source, {
                 value: result.data,
                 writable: true,

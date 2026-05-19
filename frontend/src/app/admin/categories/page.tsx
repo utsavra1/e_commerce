@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { Category } from '@/types';
-import { fetchCategories, createAdminCategory, deleteAdminCategory } from '@/services/api';
+import { fetchCategories, createAdminCategory, deleteAdminCategory, createAdminSubcategory } from '@/services/api';
 import styles from './page.module.css';
 
 export default function AdminCategoriesPage() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [newCatName, setNewCatName] = useState('');
     const [loading, setLoading] = useState(true);
+    const [newSubNames, setNewSubNames] = useState<{[key: number]: string}>({});
 
     const loadCategories = async () => {
         try {
@@ -50,6 +51,21 @@ export default function AdminCategoriesPage() {
         }
     };
 
+   const handleAddSub = async (catId: number) => {
+    const subName = newSubNames[catId];
+    if (!subName?.trim()) return;
+    try {
+        await createAdminSubcategory(catId, subName.trim());
+        // Fix: Explicitly type 'prev' to avoid the 'any' error
+        setNewSubNames((prev: {[key: number]: string}) => ({ ...prev, [catId]: '' }));
+        await loadCategories();
+        window.alert('Subcategory added!');
+    } catch (error) {
+        console.error(error);
+        window.alert('Error adding subcategory');
+    }
+};
+
     if (loading) return <div className={styles.loading}>Loading categories...</div>;
 
     return (
@@ -83,6 +99,20 @@ export default function AdminCategoriesPage() {
                                     </li>
                                 ))}
                             </ul>
+                            <div className={styles.addSubForm}>
+                                    <input 
+                                        placeholder="Add Subcategory" 
+                                        className={styles.subInput}
+                                        value={newSubNames[cat.category_id] || ''} 
+                                        onChange={(e) => setNewSubNames((prev: {[key: number]: string}) => ({ 
+                                            ...prev, 
+                                            [cat.category_id]: e.target.value 
+                                        }))} 
+                                    />
+                                    <button onClick={() => handleAddSub(cat.category_id)} className={styles.subAddBtn}>
+                                        +
+                                    </button>
+                                </div>
                             {cat.subcategories.length === 0 && <p className={styles.empty}>No subcategories yet.</p>}
                         </div>
                     </div>

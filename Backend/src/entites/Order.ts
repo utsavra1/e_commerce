@@ -27,4 +27,17 @@ export class Order{
 
     @OneToMany(() => Orderitem, (orderitem) => orderitem.order)
     orderitem: Orderitem[];
+
+    @Column({
+    type: "enum",
+    enum: ["pending", "paid", "failed"],
+    default: "pending"
+    })
+    payment_status: string;
+
+    @Column({
+        type: "varchar",
+        nullable: true
+    })
+    transaction_uuid: string;
 }

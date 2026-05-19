@@ -5,6 +5,7 @@ import Link from "next/link";
 import styles from "./page.module.css"
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from 'react-toastify';
 
 export default function LoginPage(){
     const [email, setEmail] = useState('');
@@ -18,9 +19,15 @@ export default function LoginPage(){
             const data = await loginUser({email, password});
             // data contains message, token, and user (from the backend response)
             login(data.token, data.user);
-            router.push('/');
+            toast.success("Welcome back!", { position: "top-center" });
+            if (data.user.role === 'admin') {
+                router.push('/admin');
+            } else {
+                router.push('/');
+            }
+            
         } catch (err) {
-            alert("Invalid credentials. Please try again.");
+            toast.error("Invalid credentials. Please try again.");
         }
     };
 

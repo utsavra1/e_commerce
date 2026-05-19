@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { User, UpdateProfileInput } from '@/types'; 
 import { fetchUserProfile, updateUserProfile } from '@/services/api'; 
-import styles from './profile.module.css';
+import styles from './page.module.css';
 
 export default function ProfilePage () {
     const [user, setUser] = useState<User | null>(null);
@@ -15,12 +15,13 @@ export default function ProfilePage () {
      const loadProfile = async () => {
         try {
             const data = await fetchUserProfile();
-            setUser(data.user);
+            const userData = data.user || data;
+            setUser(userData);
             setForm({
-                username: data.user.username,
-                email: data.user.email,
-                phone: data.user.phone,
-                dob: data.user.dob ? data.user.dob.split('T')[0] : ''
+                username: userData.username,
+                email: userData.email,
+                phone: userData.phone,
+                dob: userData.dob ? userData.dob.split('T')[0] : ''
             });
         } catch (error) {
             console.error(error);
@@ -103,7 +104,7 @@ export default function ProfilePage () {
                     </div>
                 </div>
 
-                <button onClick={() => setEditing(false)} className={styles.editBtn}>Edit Profile</button>
+                <button onClick={() => setEditing(true)} className={styles.editBtn}>Edit Profile</button>
                 </>
               )}
             </div>
