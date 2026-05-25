@@ -5,6 +5,10 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "target": "ESNext",
+    "baseUrl": ".",
+    "paths": {
+      "*": ["node_modules/*"]
+    },
     "allowJs": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
