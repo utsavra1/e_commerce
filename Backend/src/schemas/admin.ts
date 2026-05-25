@@ -8,14 +8,14 @@ export const createProductSchema = z.object({
   product_description: z.string()
     .min(5, 'Description must be at least 5 characters')
     .max(200, 'Description must not exceed 200 characters'),
-  product_price: z.number({ message: 'Price must be a number' })
+  product_price: z.coerce.number({ message: 'Price must be a number' })
     .positive('Price must be a positive number'),
-  stock: z.number({ message: 'Stock must be a number' })
+  stock: z.coerce.number({ message: 'Stock must be a number' })
     .int('Stock must be an integer')
     .min(0, 'Stock cannot be negative'),
-  subcategory_id: z.number({ message: 'Subcategory ID must be a number' })
+  subcategory_id: z.coerce.number({ message: 'Subcategory ID must be a number' })
     .int()
-    .positive(),
+    .positive('Please select a subcategory'),
   product_image: z.string()
   .url('Invalid image URL')
   .optional()
@@ -31,14 +31,14 @@ export const updateProductSchema = z.object({
     .min(5, 'Description must be at least 5 characters')
     .max(200, 'Description must not exceed 200 characters')
     .optional(),
-  product_price: z.number({ message: 'Price must be a number' })
+  product_price: z.coerce.number({ message: 'Price must be a number' })
     .positive('Price must be a positive number')
     .optional(),
-  stock: z.number({ message: 'Stock must be a number' })
+  stock: z.coerce.number({ message: 'Stock must be a number' })
     .int('Stock must be an integer')
     .min(0, 'Stock cannot be negative')
     .optional(),
-  subcategory_id: z.number({ message: 'Subcategory ID must be a number' })
+  subcategory_id: z.coerce.number({ message: 'Subcategory ID must be a number' })
     .int()
     .positive()
     .optional(),
@@ -64,7 +64,7 @@ export const createSubcategorySchema = z.object({
   subcategory_name: z.string()
     .min(2, 'Subcategory name must be at least 2 characters')
     .max(100, 'Subcategory name must not exceed 100 characters'),
-  category_id: z.number({ message: 'Category ID must be a number' })
+  category_id: z.coerce.number({ message: 'Category ID must be a number' })
     .int()
     .positive(),
 });
@@ -74,7 +74,7 @@ export const updateSubcategorySchema = z.object({
     .min(2, 'Subcategory name must be at least 2 characters')
     .max(100, 'Subcategory name must not exceed 100 characters')
     .optional(),
-  category_id: z.number({ message: 'Category ID must be a number' })
+  category_id: z.coerce.number({ message: 'Category ID must be a number' })
     .int()
     .positive()
     .optional(),

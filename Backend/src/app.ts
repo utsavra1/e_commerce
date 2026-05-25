@@ -12,6 +12,7 @@ import orderRoutes from './routes/order.ts'
 import reviewRoutes from './routes/review.ts'
 import adminRoutes from './routes/admin.ts'
 import profileRoutes from './routes/profile.ts'
+import addressRoutes from './routes/address.ts'
 import { errorHandler } from './middleware/errorHandler.ts';
 import paymentRoute from './routes/payment.ts';
 import cors from 'cors';
@@ -54,6 +55,7 @@ app.use('/orders', orderRoutes);
 app.use('/reviews', reviewRoutes);
 app.use('/admin', adminRoutes);
 app.use('/profile', profileRoutes);
+app.use('/address', addressRoutes);
 app.use('/payment', paymentRoute);
 
 

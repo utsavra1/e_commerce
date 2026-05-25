@@ -10,6 +10,9 @@ export default function AdminProductPage (){
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
+    const lowStockProducts = products.filter(p => p.stock > 0 && p.stock <= 5);
+    const outOfStockProducts = products.filter(p => p.stock === 0);
+
 
     const loadProducts = async() => {
         try {
@@ -49,6 +52,34 @@ export default function AdminProductPage (){
                 <h1>Manage Products ({total})</h1>
                 <Link href="/admin/products/add" className={styles.addBtn}>+ Add New Product</Link>
             </div>
+            <div className={styles.kpiContainer}>
+                <div className={styles.kpiCards}>
+                    <span>Total Product</span>
+                    <strong>{total}</strong>
+                </div>
+                <div className={styles.kpiCards}>
+                    <span>Low Stock</span>
+                    <strong className={styles.warningText}>{lowStockProducts.length}</strong>
+                </div>
+                <div className={styles.kpiCard}>
+                    <span>Out of Stock</span>
+                    <strong className={styles.dangerText}>{outOfStockProducts.length}</strong>
+                </div>
+            </div>
+
+            {lowStockProducts.length > 0 && (
+                <div className={styles.lowStockAlert}>
+                    <span className={styles.alertIcon}>⚠️</span>
+                    <div className={styles.alertContent}>
+                    <strong>Low Stock Alert:</strong> {lowStockProducts.length} items are running low. Please restock soon.
+                    <ul style={{marginTop: '5px', fontSize: '0.85rem', listStyle: 'none', padding: 0}}>
+                            {lowStockProducts.slice(0, 3).map(p => (
+                                <li key={p.product_id}>• {p.product_name} (Only {p.stock} left)</li>
+                            ))}
+                        </ul>
+                </div>
+                </div>
+            )}
 
             <div className={styles.tableWrapper}>
                 <table className={styles.table}>

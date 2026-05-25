@@ -12,6 +12,7 @@ export default function LoginPage(){
     const [password, setPassword] = useState('');
     const router = useRouter();
     const { login } = useAuth();
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) =>{
         e.preventDefault();
@@ -47,13 +48,21 @@ export default function LoginPage(){
 
                     <div className={styles.inputGroup}>
                     <label className={styles.label}>Password</label>
+                    <div className={styles.passwordWrapper}>
                     <input 
-                    type="password" 
+                    type={showPassword ? "text" : "password"}  
                     className={styles.input} 
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)} 
                     required 
                     />
+                    <button 
+                        type="button"
+                        className={styles.toggleBtn}
+                        onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ? "👁️" : "🚫"}
+                    </button>
+                    </div>
                     </div>
                     <button type="submit" className={styles.submitBtn}> Sign In</button>
                 </form>

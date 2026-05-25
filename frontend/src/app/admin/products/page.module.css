@@ -103,3 +103,55 @@
     font-size: 1.2rem;
     color: #7f8c8d;
 }
+.kpiContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.kpiCard {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: transform 0.2s;
+}
+
+.kpiCard:hover {
+    transform: translateY(-5px);
+    border-color: #6366f1;
+}
+
+.kpiCard span {
+    color: #64748b;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.kpiCard strong {
+    font-size: 1.5rem;
+    color: #1e293b;
+}
+
+.warningText { color: #f59e0b; }
+.dangerText { color: #ef4444; }
+
+.lowStockAlert {
+    background-color: #fffbeb;
+    border: 1px solid #fef3c7;
+    padding: 20px;
+    border-radius: 16px;
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    color: #92400e;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.alertIcon { font-size: 1.5rem; }
+.alertContent strong { display: block; margin-bottom: 4px; }

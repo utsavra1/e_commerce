@@ -23,3 +23,17 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     next(err);
   }
 };
+
+export const verify = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, otp } = req.body;
+    const result = await authService.verifyOTP(email, otp);
+
+    return res.status(200).json({ 
+      message: 'Email verified successfully!', 
+      ...result 
+    });
+  } catch (err) {
+    next(err);
+  }
+};

@@ -4,17 +4,45 @@
 
 .header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
+  flex-direction: column;
+  gap: 20px;
   margin-bottom: 40px;
 }
 
-.stats {
-  background: #6366f1;
-  color: white;
-  padding: 6px 16px;
-  border-radius: 20px;
+.kpiContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.kpiCard {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.2s;
+}
+
+.kpiCard:hover {
+  transform: translateY(-5px);
+  border-color: #6366f1;
+}
+
+.kpiCard span {
+  color: #64748b;
   font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.kpiCard strong {
+  font-size: 1.5rem;
+  color: #111827;
   font-weight: 800;
 }
 

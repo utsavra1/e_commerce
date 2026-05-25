@@ -12,6 +12,7 @@ import {
 } from '../schemas/admin.ts';
 import { createError } from "../utils/error.ts";
 import { Poster } from "../entites/Poster.ts";
+import {cloudinary} from '../config/cloudinary.ts';
 
 const createNewProduct = async (input: CreateProductInput) => {
     const subcategoryRepo = AppDataSource.getRepository(Subcategory);
@@ -101,18 +102,45 @@ const updateExistingProduct = async (product_id: number, input: UpdateProductInp
     return product;
 };
 
+const getPublicIdFromUrl = (url: string) => {
+    const parts = url.split('/');
+    const fileName = parts[parts.length - 1]?.split('.')[0];
+    const folder = parts[parts.length - 2];
+    return `${folder}/${fileName}`;
+}
+
 const deleteExistingProduct = async (product_id: number) => {
-    const productRepo = AppDataSource.getRepository(Product);
-    const product = await productRepo.findOne({
-        where: {product_id},
-    });
+    const queryRunner = AppDataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    if(!product){
-        throw createError('Product not available', 404);
+    try{
+        const productRepo = queryRunner.manager.getRepository(Product);
+        const posterRepo = queryRunner.manager.getRepository(Poster);
+
+        const product = await productRepo.findOne({
+            where: { product_id },
+            relations: ['posters']
+        });
+
+        if (!product) {
+            throw createError('Product not found', 404);
+        }
+        for (const poster of product.posters) {
+            const publicId = getPublicIdFromUrl(poster.url);
+            await cloudinary.uploader.destroy(publicId);
+        }
+        await posterRepo.remove(product.posters);
+        await productRepo.remove(product);
+
+        // Commit transaction
+        await queryRunner.commitTransaction();
+    } catch (err) {
+        await queryRunner.rollbackTransaction();
+        throw err;
+    } finally {
+        await queryRunner.release();
     }
-
-    await productRepo.remove(product);
-
 };
 const createNewCategory = async (input: CreateCategoryInput) => {
     const categoryRepo = AppDataSource.getRepository(Categories);
@@ -221,6 +249,8 @@ const updateExistingSubcategory = async (subcategory_id: number, input: UpdateSu
         await subcategoryRepo.save(subcategory);
         return subcategory;
 }
+
+
 
 const deleteExistingSubcategory = async (subcategory_id: number) => {
     const subcategoryRepo = AppDataSource.getRepository(Subcategory);

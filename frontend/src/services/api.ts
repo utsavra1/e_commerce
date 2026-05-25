@@ -50,8 +50,10 @@ const registerUser = async (data: RegisterInput) =>{
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data),
     });
-    if(!response.ok)
-        throw new Error('Registration failed');
+    if(!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Registration failed');
+    }
 
     return response.json();
 }
@@ -196,6 +198,49 @@ const createReview = async (productId: number, data: CreateReviewInput): Promise
     }
     return response.json();
 }
+
+// Address API
+const fetchMyAddresses = async (): Promise<{ addresses: any[] }> => {
+    const token = getToken();
+    const response = await fetch(`${BASE_URL}/address`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+    });
+    if (!response.ok) throw new Error('Failed to fetch addresses');
+    return response.json();
+};
+
+const addAddress = async (data: any): Promise<{ message: string; address: any }> => {
+    const token = getToken();
+    const response = await fetch(`${BASE_URL}/address`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to add address');
+    }
+    return response.json();
+};
+
+const deleteAddress = async (addressId: number): Promise<{ message: string }> => {
+    const token = getToken();
+    const response = await fetch(`${BASE_URL}/address/${addressId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+    });
+    if (!response.ok) throw new Error('Failed to delete address');
+    return response.json();
+};
 const fetchUserProfile = async (): Promise<AuthResponse> => {
     const token = getToken();
     const response = await fetch(`${BASE_URL}/profile/me`, {
@@ -232,15 +277,14 @@ const fetchCategories = async (): Promise<Category[]> => {
     return response.json();
 };
 
-const createAdminProduct = async (data: CreateProductInput): Promise<{message: string; product: Product}> =>{
-    const token = getToken();
+const createAdminProduct = async (formData: FormData): Promise<Product> =>{
+    const token = localStorage.getItem('token');
     const response = await fetch(`${BASE_URL}/admin/products`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(data),
+        body: formData,
     });
     if (!response.ok) {
         const error = await response.json();
@@ -261,17 +305,19 @@ const deleteAdminProduct = async (productId: number): Promise<{ message: string 
     return response.json();
 };
 
-const updateAdminProduct = async (productId: number, data: UpdateProductInput): Promise<{ message: string; product: Product }> => {
+const updateAdminProduct = async (productId: number, formData: FormData): Promise<{ message: string; product: Product }> => {
     const token = getToken();
     const response = await fetch(`${BASE_URL}/admin/products/${productId}`, {
         method: 'PATCH',
         headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(data),
+        body: formData,
     });
-    if (!response.ok) throw new Error('Failed to update product');
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to update product');
+    }
     return response.json();
 };
 
@@ -354,6 +400,19 @@ const verifyEsewaPayment = async (data: string) => {
     return response.json();
 };
 
+const verifyOTP = async (email: string, otp: string) => {
+    const response = await fetch(`${BASE_URL}/auth/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp }),
+    });
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Verification failed');
+    }
+    return response.json();
+};
+
 export {
     fetchProducts,
     fetchProductById,
@@ -379,5 +438,9 @@ export {
     deleteAdminCategory,
     initiateEsewaPayment,
     verifyEsewaPayment,
-    createAdminSubcategory
+    createAdminSubcategory,
+    verifyOTP,
+    fetchMyAddresses,
+    addAddress,
+    deleteAddress,
 };

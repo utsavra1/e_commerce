@@ -2,22 +2,23 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { registerUser } from '@/services/api';
-import styles from '../login/page.module.css'; 
+import styles from './page.module.css'; 
 import { RegisterInput } from '@/types';
 import { toast } from 'react-toastify';
 
 export default function RegisterPage(){
     const [form, setForm] = useState({ username: '', email: '', password: '', phone: '', dob: '' })
-    const router = useRouter()
+    const router = useRouter();
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) =>{
         e.preventDefault();
         try {
             await registerUser(form);
-            toast.success("Account created! Please sign in.");
-            router.push('/login');
+            toast.info("OTP sent to your email!");
+            router.push(`/register/verify?email=${encodeURIComponent(form.email)}`);
         } catch (err) {
-            toast.error("Registration failed. Please check your details.");
+            toast.error(err instanceof Error ? err.message : "Registration failed. Please check your details.");
         }
     };
 
@@ -52,12 +53,21 @@ export default function RegisterPage(){
           {/* Password Input */}
           <div className={styles.inputGroup}>
             <label className={styles.label}>Password</label>
-            <input 
-              type="password" 
-              className={styles.input} 
-              required
-              onChange={(e) => setForm({...form, password: e.target.value})} 
-            />
+            <div className={styles.passwordWrapper}>
+              <input 
+                  type={showPassword ? "text" : "password"} 
+                  className={styles.input} 
+                  required
+                  onChange={(e) => setForm({...form, password: e.target.value})} 
+              />
+              <button 
+                  type="button"
+                  className={styles.toggleBtn}
+                  onClick={() => setShowPassword(!showPassword)}
+              >
+                  {showPassword ? "👁️" : "🚫"}
+              </button>
+            </div>
           </div>
 
           {/* Phone Input */}
@@ -72,7 +82,7 @@ export default function RegisterPage(){
             />
           </div>
 
-          {/* DOB Input - IMPORTANT: Backend expects YYYY-MM-DD */}
+            {/* Date of Birth Input */}
           <div className={styles.inputGroup}>
             <label className={styles.label}>Date of Birth</label>
             <input 

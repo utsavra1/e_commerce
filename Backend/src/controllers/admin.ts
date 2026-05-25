@@ -8,11 +8,26 @@ import {
   UpdateSubcategoryInput,
 } from '../schemas/admin.ts';
 import * as adminService from '../services/admin.ts';
+import {cloudinary} from '../config/cloudinary.ts';
 
 
 const createProduct = async(req: Request, res: Response, next: NextFunction) => {
     try {
-        const input = req.body as CreateProductInput;
+        let imageUrl = req.body.product_image;
+
+        if(req.file) {
+            const result = await new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream({ folder: 'products' }, (error, result) => {
+                    if (error) 
+                        reject(error);
+                    else 
+                        resolve(result);
+                }).end(req.file!.buffer);
+            });
+            imageUrl = (result as any).secure_url;
+        }
+
+        const input = { ...req.body, product_image: imageUrl };
         const product = await adminService.createNewProduct(input);
 
         return res.status(201).json({
@@ -27,13 +42,23 @@ const createProduct = async(req: Request, res: Response, next: NextFunction) => 
 const updateProduct = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const product_id = parseInt(req.params['product_id'] as string, 10);
-        const body = req.body as UpdateProductInput;
+        let updateData = { ...req.body };
 
         if(isNaN(product_id)){
             return res.status(400).json({message: 'Invalid Id'});
         }
 
-        const product = await adminService.updateExistingProduct(product_id, body);
+        if (req.file) {
+            const result = await new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream({ folder: 'products' }, (error, result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                }).end(req.file!.buffer);
+            });
+            updateData.product_image = (result as any).secure_url;
+        }
+
+        const product = await adminService.updateExistingProduct(product_id, updateData);
 
         return res.status(200).json({
             message: 'Product updated successfully',

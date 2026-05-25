@@ -39,34 +39,55 @@ export default function OrderDetailPage (){
             <div className={styles.header}>
                 <h1>Order Detail</h1>
                 <p className={styles.orderId}>Order #{order.order_id}</p>
-                <p className={styles.date}> Date: {new Date (order.order_date).toLocaleDateString()}</p>
+                <div className={styles.meta}>
+                    <p className={styles.date}> Date: {new Date (order.order_date).toLocaleDateString()}</p>
+                    <p className={styles.status}>Status: <span className={styles[order.payment_status]}>{order.payment_status.toUpperCase()}</span></p>
+                    <p className={styles.paymentMethod}>Payment: {order.payment_method.toUpperCase()}</p>
+                </div>
             </div>
 
-            <div className={styles.section}>
-                <h3>Items in this Order</h3>
-                <div className={styles.itemsList}>
-                    {order.orderitem.map((item) => (
-                        <div key={item.order_item_id} className={styles.itemRow}>
-                            <div className={styles.itemInfo}>
-                                <p className={styles.itemName}>{item.product.product_name}</p>
-                                <p className={styles.itemQty}>Qty: {item.quantity}</p>
-                            </div>
-                            <div className={styles.itemPrice}>
-                                <p>Rs {item.price}</p>
-                                <p className={styles.subtotal}>Subtotal: Rs {Number(item.price) * item.quantity}</p>
-                            </div>
+            <div className={styles.grid}>
+                <div className={styles.leftCol}>
+                    <div className={styles.section}>
+                        <h3>Items in this Order</h3>
+                        <div className={styles.itemsList}>
+                            {order.orderitem.map((item) => (
+                                <div key={item.order_item_id} className={styles.itemRow}>
+                                    <div className={styles.itemInfo}>
+                                        <p className={styles.itemName}>{item.product.product_name}</p>
+                                        <p className={styles.itemQty}>Qty: {item.quantity}</p>
+                                    </div>
+                                    <div className={styles.itemPrice}>
+                                        <p>Rs {item.price}</p>
+                                        <p className={styles.subtotal}>Subtotal: Rs {Number(item.price) * item.quantity}</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    ))}
+                    </div>
                 </div>
-            </div>
-            <div className={styles.summary}>
-                <div className={styles.summaryRow}>
-                    <span>Order Total</span>
-                    <span className={styles.totalAmount}>Rs {order.total_amount}</span>
-                </div>
-                <div className={styles.description}>
-                    <h4>Notes:</h4>
-                    <p>{order.order_description}</p>
+
+                <div className={styles.rightCol}>
+                    <div className={styles.section}>
+                        <h3>Delivery Address</h3>
+                        <div className={styles.addressBox}>
+                            <p><strong>Province:</strong> {order.province}</p>
+                            <p><strong>District:</strong> {order.district}</p>
+                            <p><strong>City:</strong> {order.city}</p>
+                            <p><strong>Street:</strong> {order.street_address}</p>
+                        </div>
+                    </div>
+
+                    <div className={styles.summary}>
+                        <div className={styles.summaryRow}>
+                            <span>Order Total</span>
+                            <span className={styles.totalAmount}>Rs {order.total_amount}</span>
+                        </div>
+                        <div className={styles.description}>
+                            <h4>Notes:</h4>
+                            <p>{order.order_description || "No notes provided."}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

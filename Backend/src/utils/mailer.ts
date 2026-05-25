@@ -52,3 +52,21 @@ export const sendEmail = async (to: string, orderDetails: any) =>{
         html: htmlContent,
 });
 };
+
+export const sendOTPEmail = async (to: string, otp: string) => {
+    const htmlContent = `
+        <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px; border: 1px solid #ddd; border-radius: 12px;">
+            <h2 style="color: #6366f1;">Verify Your Email</h2>
+            <p>Thank you for registering! Your verification code is:</p>
+            <h1 style="letter-spacing: 5px; color: #111827; background: #f3f4f6; padding: 10px; display: inline-block;">${otp}</h1>
+            <p>This code will expire in 10 minutes.</p>
+        </div>
+    `;
+
+    await transporter.sendMail({
+        from: `"E-Store" <${env.email.user}>`,
+        to,
+        subject: `Email Verification Code`,
+        html: htmlContent,
+    });
+};

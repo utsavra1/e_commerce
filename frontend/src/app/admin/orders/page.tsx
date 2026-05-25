@@ -9,6 +9,11 @@ import Link from 'next/link';
 export default function AdminOrdersPage() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
+    
+    const today = new Date().toLocaleDateString();
+    const dailyOrders = orders.filter(o => new Date(o.order_date).toLocaleDateString() === today);
+    const dailyEarnings = dailyOrders.reduce((sum, o) => sum + Number(o.total_amount), 0);
+    const totalRevenue = orders.reduce((sum, o) => sum + Number(o.total_amount), 0);
 
     const loadOrders = async () => {
         try {
@@ -29,7 +34,24 @@ export default function AdminOrdersPage() {
         <div className={styles.container}>
             <div className={styles.header}>
                 <h1>All Customer Orders</h1>
-                <p className={styles.stats}>Total Orders: {orders.length}</p>
+                <div className={styles.kpiContainer}>
+                    <div className={styles.kpiCard}>
+                        <span>Total Orders</span>
+                        <strong>{orders.length}</strong>
+                    </div>
+                    <div className={styles.kpiCard}>
+                        <span>Orders Today</span>
+                        <strong>{dailyOrders.length}</strong>
+                    </div>
+                    <div className={styles.kpiCard}>
+                        <span>Today's Earnings</span>
+                        <strong>Rs {dailyEarnings.toLocaleString()}</strong>
+                    </div>
+                    <div className={styles.kpiCard}>
+                        <span>Total Revenue</span>
+                        <strong>Rs {totalRevenue.toLocaleString()}</strong>
+                    </div>
+                </div>
             </div>
 
             <div className={styles.tableWrapper}>

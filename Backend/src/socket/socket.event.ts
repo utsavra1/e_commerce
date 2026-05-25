@@ -7,4 +7,5 @@ export const SOCKET_EVENTS = {
     ORDER_STATUS_UPDATE: 'order_status_update',
 
     STOCK_UPDATE: 'stock_update',
+    LOW_STOCK_ALERT: 'low_stock_alert',
 } as const;

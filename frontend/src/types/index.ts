@@ -98,20 +98,35 @@ export interface OrderItem {
   quantity: number;
   subtotal?: number; 
   product: {
-    product_id: number;
     product_name: string;
   };
 }
+
 export interface Order {
   order_id: number;
   order_date: number;
   order_description: string;
   total_amount: number;
+  payment_method: string;
+  payment_status: string;
+  province: string;
+  district: string;
+  city: string;
+  street_address: string;
   orderitem: OrderItem[];
+  user?: {
+    username: string;
+    email: string;
+  };
 }
 
 export interface PlaceOrderInput {
   order_description: string;
+  payment_method: 'esewa' | 'cod';
+  province: string;
+  district: string;
+  city: string;
+  street_address: string;
 }
 export interface Review {
   review_id: number;

@@ -13,13 +13,14 @@ import {
   createCategorySchema, updateCategorySchema,
   createSubcategorySchema, updateSubcategorySchema,
 } from '../schemas/admin.ts';
+import {upload } from '../middleware/upload.ts'
 
 const router = Router();
 
 router.use(authenticate, authorizeAdmin);
-router.get('/orders', getAllOrders); // Add this route
-router.post('/products', validate(createProductSchema), createProduct);
-router.patch('/products/:product_id', validate(updateProductSchema), updateProduct);
+router.get('/orders', getAllOrders); 
+router.post('/products', upload.single('image'), validate(createProductSchema), createProduct);
+router.patch('/products/:product_id', upload.single('image'), validate(updateProductSchema), updateProduct);
 router.delete('/products/:product_id', deleteProduct);
 
 router.post('/categories', validate(createCategorySchema), createCategory);

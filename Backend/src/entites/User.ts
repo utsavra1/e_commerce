@@ -35,6 +35,15 @@ export class User{
     })
     dob: string;
 
+    @Column({ default: false })
+    is_verified: boolean;
+
+    @Column({ type: "varchar", nullable: true })
+    otp: string | null;
+
+    @Column({ type: "timestamp", nullable: true })
+    otp_expiry: Date | null;
+
    @CreateDateColumn()
     created_at: number;
 

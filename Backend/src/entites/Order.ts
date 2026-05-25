@@ -22,6 +22,18 @@ export class Order{
     })
     total_amount: number;
 
+    @Column({ type: "varchar", nullable: true })
+    province: string;
+
+    @Column({ type: "varchar", nullable: true })
+    district: string;
+
+    @Column({ type: "varchar", nullable: true })
+    city: string;
+
+    @Column({ type: "varchar", nullable: true })
+    street_address: string; 
+
     @ManyToOne("User", (user: User) => user.order)
     user: User;
 
@@ -40,4 +52,8 @@ export class Order{
         nullable: true
     })
     transaction_uuid: string;
+
+   
+    @Column({ type: 'enum', enum: ['esewa', 'cod'], default: 'esewa' })
+    payment_method: string;
 }

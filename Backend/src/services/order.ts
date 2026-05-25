@@ -11,7 +11,14 @@ import { SOCKET_EVENTS } from '../socket/socket.event.ts';
 import { createError } from "../utils/error.ts";
 import { sendEmail } from "../utils/mailer.ts";
 
-const placeNewOrder = async (user_id: number, input: PlaceOrderInput) => {
+const placeNewOrder = async (user_id: number, input: { 
+    order_description: string, 
+    payment_method: 'esewa' | 'cod',
+    province: string,
+    district: string,
+    city: string,
+    street_address: string 
+}) => {
     const orderRepo = AppDataSource.getRepository(Order);
     const cartRepo = AppDataSource.getRepository(Cart);
     const userRepo = AppDataSource.getRepository(User);
@@ -42,7 +49,13 @@ const placeNewOrder = async (user_id: number, input: PlaceOrderInput) => {
     const order = await orderRepo.create({
         order_description: input.order_description,
         total_amount,
-        user: {user_id}
+        payment_status: 'pending',
+        payment_method: input.payment_method,
+        province: input.province,       
+        district: input.district,         
+        city: input.city,                 
+        street_address: input.street_address,
+        user: { user_id }
     });
 
     await orderRepo.save(order);
@@ -60,22 +73,33 @@ const placeNewOrder = async (user_id: number, input: PlaceOrderInput) => {
         await productRepo.save(item.product);
 
         // using socket when the qantity changes
-
         getIO().emit(SOCKET_EVENTS.STOCK_UPDATE, {
             product_id: item.product.product_id,
             product_name: item.product.product_name,
             new_stock: item.product.stock,
-        })
-    }
+        });
 
-    await cartitemRepo.delete(cart.cartitem);
+        if (item.product.stock <= 5){
+        getIO().to('admin_room').emit(SOCKET_EVENTS.LOW_STOCK_ALERT, {
+            message: `Low stock alert for ${item.product.product_name} has only ${item.product.stock} left`,
+            product_id: item.product.product_id,
+            stock: item.product.stock
+        });
+    }
+    }
+    await cartitemRepo.remove(cart.cartitem);
     const user = await userRepo.findOne({ where: { user_id } });
 
 
-    const orderSummary = {
+  const orderSummary: any = {
     order_id: order.order_id,
     order_description: order.order_description,
     total_amount: order.total_amount,
+    payment_method: order.payment_method,
+    province: order.province,
+    district: order.district,
+    city: order.city,
+    street_address: order.street_address,
     orderitem: cart.cartitem.map((item) => ({
       product_name: item.product.product_name,
       quantity: item.quantity,
@@ -84,14 +108,13 @@ const placeNewOrder = async (user_id: number, input: PlaceOrderInput) => {
     })),
   };
   
-
-  // socket to notify admin about order in real time
+  // Notify admin about the order (works for both eSewa and COD)
   getIO().to('admin_room').emit(SOCKET_EVENTS.NEW_ORDER, {
-    message: `New order #${order.order_id} placed`,
+    message: `New order #${order.order_id} placed (${order.payment_method})`,
     ...orderSummary,
   });
-  return orderSummary;
 
+  return orderSummary;
 };
 
 const fetchMyOrders = async(user_id: number) => {
@@ -101,10 +124,6 @@ const fetchMyOrders = async(user_id: number) => {
         order: {order_date: 'DESC'},
     });
 
-    if(order.length === 0){
-        throw createError('No Order Found', 404);
-    }
-
     return {
     total_orders: order.length,
     orders: order.map((order) => ({
@@ -112,6 +131,12 @@ const fetchMyOrders = async(user_id: number) => {
       order_description: order.order_description,
       total_amount: order.total_amount,
       order_date: order.order_date,
+      payment_method: order.payment_method,
+      payment_status: order.payment_status,
+      province: order.province,
+      district: order.district,
+      city: order.city,
+      street_address: order.street_address,
     })),
   };
 };
@@ -138,6 +163,12 @@ const fetchOrderById = async(order_id: number, user_id: number, role?: string) =
         order_description: order.order_description,
         order_date: order.order_date,
         total_amount: order.total_amount,
+        payment_method: order.payment_method,
+        payment_status: order.payment_status,
+        province: order.province,
+        district: order.district,
+        city: order.city,
+        street_address: order.street_address,
         total_items: order.orderitem.length,
         orderitem: order.orderitem.map((item) => ({
             order_item_id: item.order_item_id,
@@ -148,6 +179,11 @@ const fetchOrderById = async(order_id: number, user_id: number, role?: string) =
             price: item.price,           // price snapshot at time of purchase
             subtotal: Number(item.price) * item.quantity,
         })),
+        user: {
+            user_id: order.user.user_id,
+            username: order.user.username,
+            email: order.user.email
+        }
     };
 };
 

@@ -66,37 +66,42 @@ const verifyPayment = async (req: Request, res: Response, next: NextFunction) =>
             return res.status(400).json({ message: "Invalid signature" });
         }
 
-        if (paymentInfo.status === "COMPLETE") {
-            const orderRepo = AppDataSource.getRepository(Order);
-            const userRepo = AppDataSource.getRepository(User);
-            
-            const order = await orderRepo.findOne({ 
-                where: { transaction_uuid: paymentInfo.transaction_uuid },
-                relations: ['orderitem', 'orderitem.product', 'user']
-            });
-
-            if (!order) return res.status(404).json({ message: "Order not found" });
-
-            order.payment_status = "paid";
-            await orderRepo.save(order);
-
-            const user = await userRepo.findOne({ where: { user_id: order.user.user_id } });
-            if (user?.email) {
-                const orderSummary = {
-                    order_id: order.order_id,
-                    total_amount: order.total_amount,
-                    items: order.orderitem.map(item => ({
-                        product_name: item.product.product_name,
-                        quantity: item.quantity,
-                        price: item.price
-                    }))
-                };
-                sendEmail(user.email, orderSummary).catch(err => console.error(err));
-            }
-
-            return res.status(200).json({ message: "Success", order });
+        if (paymentInfo.status !== "COMPLETE") {
+            console.log(`>>> Payment failed/cancelled for ${paymentInfo.transaction_uuid}`);
+            return res.status(200).json({ message: "Payment was not successful", status: paymentInfo.status });
         }
-    } catch (err) { next(err); }
+
+        const orderRepo = AppDataSource.getRepository(Order);
+        const userRepo = AppDataSource.getRepository(User);
+        
+        const order = await orderRepo.findOne({ 
+            where: { transaction_uuid: paymentInfo.transaction_uuid },
+            relations: ['orderitem', 'orderitem.product', 'user']
+        });
+
+        if (!order) return res.status(404).json({ message: "Order not found" });
+
+        order.payment_status = "paid";
+        await orderRepo.save(order);
+
+        const user = await userRepo.findOne({ where: { user_id: order.user.user_id } });
+        if (user?.email) {
+            const orderSummary = {
+                order_id: order.order_id,
+                total_amount: order.total_amount,
+                items: order.orderitem.map(item => ({
+                    product_name: item.product.product_name,
+                    quantity: item.quantity,
+                    price: item.price
+                }))
+            };
+            sendEmail(user.email, orderSummary).catch(err => console.error(err));
+        }
+
+        return res.status(200).json({ message: "Success", order });
+    } catch (err) {
+        next(err);
+    }
 };
 
 export { initiatePayment, verifyPayment };

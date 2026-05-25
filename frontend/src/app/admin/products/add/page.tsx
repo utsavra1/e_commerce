@@ -11,6 +11,7 @@ export default function AddProductPage() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
+    const [imageFile, setImageFile] = useState<File | null>(null);
     const [formData, setFormData] = useState<CreateProductInput>({
         product_name: '',
         product_description: '',
@@ -45,19 +46,31 @@ export default function AddProductPage() {
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setSubmitting(true);
-        try {
-            await createAdminProduct(formData);
-            alert('Product added successfully!');
-            router.push('/admin/products');
-        } catch (error) {
-            console.error(error);
-            alert('Failed to add product');
-        } finally {
-            setSubmitting(false);
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+        const data = new FormData();
+        data.append('product_name', formData.product_name);
+        data.append('product_description', formData.product_description);
+        data.append('product_price', String(formData.product_price));
+        data.append('stock', String(formData.stock));
+        data.append('subcategory_id', String(formData.subcategory_id));
+        
+        if (imageFile) {
+            data.append('image', imageFile); 
         }
-    };
+
+        await createAdminProduct(data);
+        alert('Product added successfully!');
+        router.push('/admin/products');
+    } catch (error: any) {
+        console.error('Error adding product:', error);
+        const errorMessage = error.response?.data?.message || error.message || 'Failed to add product';
+        alert(errorMessage);
+    } finally {
+        setSubmitting(false);
+    }
+};
 
     if (loading) return <div className={styles.container}>Loading form data...</div>;
 
@@ -113,12 +126,11 @@ export default function AddProductPage() {
                 </div>
 
                 <div className={styles.inputGroup}>
-                    <label>Product Image URL</label>
+                    <label>Product Image</label>
                     <input 
-                        name="product_image" 
-                        value={formData.product_image || ''} 
-                        onChange={handleChange} 
-                        placeholder="https://example.com/image.jpg"
+                        type="file" 
+                        accept="image/*"
+                        onChange={(e) => setImageFile(e.target.files?.[0] || null)}
                     />
                 </div>
 

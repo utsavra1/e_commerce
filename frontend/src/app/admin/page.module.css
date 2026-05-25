@@ -110,3 +110,48 @@
     font-size: 1.2rem;
     color: #7f8c8d;
 }
+
+.chartsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    margin-top: 30px;
+    margin-bottom: 50px;
+}
+
+.chartBox {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f5f9;
+    transition: transform 0.3s ease;
+}
+
+.chartBox:hover {
+    transform: translateY(-5px);
+}
+
+.chartBox h3 {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    color: #334155;
+    font-weight: 700;
+}
+
+.chartWrapper {
+    width: 100%;
+    overflow: hidden;
+}
+
+@media (max-width: 1024px) {
+    .chartsGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .chartsGrid {
+        grid-template-columns: 1fr;
+    }
+}
