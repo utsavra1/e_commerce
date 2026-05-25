@@ -22,7 +22,8 @@
     "rewriteRelativeImportExtensions": true,
     "strict": false,
     "jsx": "react-jsx",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": false
   },
   "ts-node": {
     "esm": true,

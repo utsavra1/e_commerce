@@ -1,5 +1,9 @@
 import { DataSource } from 'typeorm';
 import { env } from './env.ts';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const AppDataSource = new DataSource({
    type: "postgres",
@@ -11,7 +15,7 @@ export const AppDataSource = new DataSource({
        database: env.db.name,
    }),
    ssl: env.db.url ? { rejectUnauthorized: false } : false,
-   entities: ["src/entites/*{.ts,.js}"],
+   entities: [path.join(__dirname, '../entites/*.{ts,js}')],
    synchronize: true,
    logging: true
 });
