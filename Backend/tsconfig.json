@@ -2,24 +2,22 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "module": "nodenext",
-    "target": "esnext",
-    "types": ["node"],
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "target": "ESNext",
+    "allowJs": true,
+    "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "sourceMap": true,
     "declaration": true,
-    "declarationMap": true,
-    "noUncheckedIndexedAccess": true,
+    "noUncheckedIndexedAccess": false,
     "strictPropertyInitialization": false,
     "allowImportingTsExtensions": true,
     "noEmit": false,
     "rewriteRelativeImportExtensions": true,
     "strict": false,
     "jsx": "react-jsx",
-    "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
     "skipLibCheck": true
   },
   "ts-node": {
@@ -27,7 +25,7 @@
     "experimentalEsm": true,
     "transpileOnly": true,
     "compilerOptions": {
-      "module": "esnext"
+      "module": "ESNext"
     }
   }
 }

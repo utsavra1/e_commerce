@@ -15,7 +15,7 @@ const createProduct = async(req: Request, res: Response, next: NextFunction) => 
     try {
         let imageUrl = req.body.product_image;
 
-        if(req.file) {
+        if((req as any).file) {
             const result = await new Promise((resolve, reject) => {
                 cloudinary.uploader.upload_stream({ folder: 'products' }, (error: any, result: any) => {
                     if (error) 
