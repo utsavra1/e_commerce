@@ -1,6 +1,6 @@
 import { AppDataSource } from "../config/database.ts";
 import { User } from "../entites/User.ts";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import { createError } from "../utils/error.ts";
 import { UpdateProfileInput, ChangePasswordInput } from "../schemas/profile.ts";
 

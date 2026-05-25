@@ -17,12 +17,12 @@ const createProduct = async(req: Request, res: Response, next: NextFunction) => 
 
         if(req.file) {
             const result = await new Promise((resolve, reject) => {
-                cloudinary.uploader.upload_stream({ folder: 'products' }, (error, result) => {
+                cloudinary.uploader.upload_stream({ folder: 'products' }, (error: any, result: any) => {
                     if (error) 
                         reject(error);
                     else 
                         resolve(result);
-                }).end(req.file!.buffer);
+                }).end((req as any).file!.buffer);
             });
             imageUrl = (result as any).secure_url;
         }
@@ -48,12 +48,12 @@ const updateProduct = async(req: Request, res: Response, next: NextFunction) => 
             return res.status(400).json({message: 'Invalid Id'});
         }
 
-        if (req.file) {
+        if ((req as any).file) {
             const result = await new Promise((resolve, reject) => {
-                cloudinary.uploader.upload_stream({ folder: 'products' }, (error, result) => {
+                cloudinary.uploader.upload_stream({ folder: 'products' }, (error: any, result: any) => {
                     if (error) reject(error);
                     else resolve(result);
-                }).end(req.file!.buffer);
+                }).end((req as any).file!.buffer);
             });
             updateData.product_image = (result as any).secure_url;
         }
