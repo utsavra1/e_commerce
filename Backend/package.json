@@ -7,7 +7,7 @@
     "dev": "nodemon ./src/app.ts",
     "seed": "node --loader ts-node/esm ./src/seed.ts",
     "build": "tsc -p .",
-    "prod": "node  ./dist/app.js"
+    "start": "node  ./dist/app.js"
   },
   "keywords": [],
   "author": "",

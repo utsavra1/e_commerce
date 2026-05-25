@@ -41,8 +41,7 @@ app.use(cors({
 app.use(express.json());
 
 const httpServer = createServer(app);
-initSocket(httpServer);
-const port = 3000; 
+initSocket(httpServer); 
 
 // swagger api 
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
