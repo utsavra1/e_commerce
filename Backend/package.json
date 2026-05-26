@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon ./src/app.ts",
-    "seed": "node --loader ts-node/esm ./src/seed.ts",
+    "seed": "tsx ./src/seed.ts",
     "build": "tsc -p .",
     "start": "node  ./dist/app.js"
   },

@@ -6,19 +6,19 @@ export class Address {
     @PrimaryGeneratedColumn()
     address_id: number;
 
-    @Column()
+    @Column({ type: "varchar", length: 50 })
     label: string; // "Home", "Work", etc.
 
-    @Column()
+    @Column({ type: "varchar", length: 100 })
     province: string;
 
-    @Column()
+    @Column({ type: "varchar", length: 100 })
     district: string;
 
-    @Column()
+    @Column({ type: "varchar", length: 100 })
     city: string;
 
-    @Column()
+    @Column({ type: "varchar", length: 255 })
     street_address: string;
 
     @ManyToOne(() => User, (user) => user.user_id)

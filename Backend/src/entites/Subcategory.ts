@@ -7,7 +7,10 @@ export class Subcategory{
     @PrimaryGeneratedColumn()
     subcategory_id: number;
 
-    @Column()
+    @Column({
+        type: "varchar",
+        length: 255
+    })
     subcategory_name: string;
 
     @ManyToOne("Categories", (categories: Categories) => categories.subcategories)

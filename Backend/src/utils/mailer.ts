@@ -61,16 +61,23 @@ export const sendOTPEmail = async (to: string, otp: string) => {
         </div>
     `;
 
+    const isSandboxRecipient = to.toLowerCase() !== 'utsavrail15@gmail.com'; 
+
     try {
+        if (isSandboxRecipient && process.env['NODE_ENV'] === 'production') {
+            return;
+        }
+
         await resend.emails.send({
             from: 'onboarding@resend.dev',
             to,
             subject: `Email Verification Code`,
             html: htmlContent,
         });
-        console.log('OTP Email sent successfully via Resend');
     } catch (error) {
-        console.error('Failed to send OTP via Resend:', error);
+        if (isSandboxRecipient) {
+            return;
+        }
         throw error;
     }
 };

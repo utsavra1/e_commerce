@@ -7,7 +7,6 @@ import { createError } from '../utils/error.ts';
 import { sendOTPEmail } from '../utils/mailer.ts';
 
 export const registerUser = async (input: RegisterInput) => {
-    // 1. Create a QueryRunner for the transaction
     const queryRunner = AppDataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -35,12 +34,13 @@ export const registerUser = async (input: RegisterInput) => {
             phone: input.phone,
             dob: input.dob,
             role: Role.USER,
-            otp,
-            otp_expiry: otpExpiry,
-            is_verified: false,
+            otp: null,
+            otp_expiry: null,
+            is_verified: true,
         });
+
         const saved = await userRepo.save(user);
-        await sendOTPEmail(saved.email, otp);
+        
         await queryRunner.commitTransaction();
         const { password: _, ...userWithoutPassword } = saved;
         return userWithoutPassword;
@@ -79,14 +79,6 @@ export const loginUser = async (input: LoginInput) => {
     if (!user) {
       throw createError('User not found', 404);
     }
-
-    // --- QUICK FIX: Auto-verify specific developer accounts ---
-    const developerEmails = ['Utsavrail15@gmail.com', 'admin@gmail.com'];
-    if (developerEmails.includes(user.email) && !user.is_verified) {
-        user.is_verified = true;
-        await userRepo.save(user);
-    }
-    // ---------------------------------------------------------
 
     if (!user.is_verified) {
       throw createError('Please verify your email first', 401);

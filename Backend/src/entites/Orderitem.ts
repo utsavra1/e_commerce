@@ -11,7 +11,9 @@ export class Orderitem{
     })
     price: number;
 
-    @Column()
+    @Column({
+        type: "int"
+    })
     quantity: number;
     
     @ManyToOne("Order", (order: Order) => order.orderitem)

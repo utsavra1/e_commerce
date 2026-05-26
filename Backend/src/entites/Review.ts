@@ -6,7 +6,9 @@ export class Review{
     @PrimaryGeneratedColumn()
     review_id: number;
 
-    @Column()
+    @Column({
+        type: "int"
+    })
     rating: number;
 
     @Column({

@@ -11,7 +11,10 @@ export class User{
     @PrimaryGeneratedColumn()
     user_id: number;
 
-    @Column()
+    @Column({
+        type: "varchar",
+        length: 255
+    })
     username: string;
 
     @Column({
@@ -21,7 +24,10 @@ export class User{
     })
     email: string;
 
-    @Column()
+    @Column({
+        type: "varchar",
+        length: 255
+    })
     password: string;
 
     @Column({
@@ -35,7 +41,10 @@ export class User{
     })
     dob: string;
 
-    @Column({ default: false })
+    @Column({ 
+        type: "boolean",
+        default: false 
+    })
     is_verified: boolean;
 
     @Column({ type: "varchar", nullable: true })

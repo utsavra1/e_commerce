@@ -4,7 +4,7 @@ import { Cartitem } from "./Cartitem.js";
 import type { Order } from "./Order.js";
 import { Orderitem } from "./Orderitem.js";
 import { Review } from "./Review.js";
-import type { Poster } from "./Poster.ts";
+import type { Poster } from "./Poster.js";
 
 @Entity()
 export class Product{
@@ -28,7 +28,9 @@ export class Product{
     })
     product_price: number;
 
-    @Column()
+    @Column({
+        type: "int"
+    })
     stock: number;
 
     @ManyToOne("Subcategory", (subcategory: Subcategory) => subcategory.product)
