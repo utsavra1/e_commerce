@@ -5,10 +5,12 @@ const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
     secure: false,
+    requireTLS: true,
     auth: {
         user: env.email.user,
         pass: env.email.pass,
     },
+     connectionTimeout: 50000,
 });
 
 export const sendEmail = async (to: string, orderDetails: any) =>{
