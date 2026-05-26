@@ -11,12 +11,12 @@ export const registerUser = async (input: RegisterInput) => {
 
     const existingEmail = await userRepo.findOneBy({ email: input.email });
     if (existingEmail) {
-      throw createError('Email already registered', 404);
+      throw createError('Email already registered', 400);
     }
 
     const existingPhone = await userRepo.findOneBy({ phone: input.phone });
     if (existingPhone) {
-      throw createError('phone already registered', 404);
+      throw createError('Phone already registered', 400);
     }
 
     const hashedPassword = await bcrypt.hash(input.password, 10);
