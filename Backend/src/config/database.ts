@@ -2,6 +2,7 @@ import { DataSource } from 'typeorm';
 import { env } from './env.ts';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { url } from 'zod/v4';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
