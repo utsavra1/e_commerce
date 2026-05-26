@@ -1,21 +1,11 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import { env } from '../config/env.ts';
 
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    requireTLS: true,
-    auth: {
-        user: env.email.user,
-        pass: env.email.pass,
-    },
-     connectionTimeout: 50000,
-});
+const resend = new Resend(process.env['RESEND_API_KEY']);
 
 export const sendEmail = async (to: string, orderDetails: any) =>{
-    if(!env.email.user || !env.email.pass) {
-        console.warn('Email credentials missing. Receipt not sent.');
+    if(!process.env['RESEND_API_KEY']) {
+        console.warn('Resend API key missing. Receipt not sent.');
         return;
     }
 
@@ -49,12 +39,16 @@ export const sendEmail = async (to: string, orderDetails: any) =>{
         </div>
     `;
 
-    await transporter.sendMail({
-        from: `"E-Store" <${env.email.user}>`,
-        to,
-        subject: `Order Receipt #${orderDetails.order_id}`,
-        html: htmlContent,
-});
+    try {
+        await resend.emails.send({
+            from: 'onboarding@resend.dev',
+            to,
+            subject: `Order Receipt #${orderDetails.order_id}`,
+            html: htmlContent,
+        });
+    } catch (error) {
+        console.error('Failed to send receipt via Resend:', error);
+    }
 };
 
 export const sendOTPEmail = async (to: string, otp: string) => {
@@ -67,10 +61,16 @@ export const sendOTPEmail = async (to: string, otp: string) => {
         </div>
     `;
 
-    await transporter.sendMail({
-        from: `"E-Store" <${env.email.user}>`,
-        to,
-        subject: `Email Verification Code`,
-        html: htmlContent,
-    });
+    try {
+        await resend.emails.send({
+            from: 'onboarding@resend.dev',
+            to,
+            subject: `Email Verification Code`,
+            html: htmlContent,
+        });
+        console.log('OTP Email sent successfully via Resend');
+    } catch (error) {
+        console.error('Failed to send OTP via Resend:', error);
+        throw error;
+    }
 };
