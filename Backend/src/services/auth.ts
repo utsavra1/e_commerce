@@ -7,40 +7,50 @@ import { createError } from '../utils/error.ts';
 import { sendOTPEmail } from '../utils/mailer.ts';
 
 export const registerUser = async (input: RegisterInput) => {
-    const userRepo = AppDataSource.getRepository(User);
+    // 1. Create a QueryRunner for the transaction
+    const queryRunner = AppDataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    const existingEmail = await userRepo.findOneBy({ email: input.email });
-    if (existingEmail) {
-      throw createError('Email already registered', 400);
+    try {
+        const userRepo = queryRunner.manager.getRepository(User);
+        const existingEmail = await userRepo.findOneBy({ email: input.email });
+
+        if (existingEmail) 
+          throw createError('Email already registered', 400);
+
+        const existingPhone = await userRepo.findOneBy({ phone: input.phone });
+
+        if (existingPhone) 
+          throw createError('Phone already registered', 400);
+
+        const hashedPassword = await bcrypt.hash(input.password, 10);
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+
+        const user = userRepo.create({
+            username: input.username,
+            email: input.email,
+            password: hashedPassword,
+            phone: input.phone,
+            dob: input.dob,
+            role: Role.USER,
+            otp,
+            otp_expiry: otpExpiry,
+            is_verified: false,
+        });
+        const saved = await userRepo.save(user);
+        await sendOTPEmail(saved.email, otp);
+        await queryRunner.commitTransaction();
+        const { password: _, ...userWithoutPassword } = saved;
+        return userWithoutPassword;
+
+    } catch (err) {
+        await queryRunner.rollbackTransaction();
+        throw err;
+    } finally {
+        await queryRunner.release();
     }
-
-    const existingPhone = await userRepo.findOneBy({ phone: input.phone });
-    if (existingPhone) {
-      throw createError('Phone already registered', 400);
-    }
-
-    const hashedPassword = await bcrypt.hash(input.password, 10);
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
-
-    const user = userRepo.create({
-      username: input.username,
-      email: input.email,
-      password: hashedPassword,
-      phone: input.phone,
-      dob: input.dob,
-      role: Role.USER,
-      otp,
-      otp_expiry: otpExpiry,
-      is_verified: false,
-    });
-
-    const saved = await userRepo.save(user);
-    await sendOTPEmail(saved.email, otp);
-    const { password: _, ...userWithoutPassword } = saved;
-
-    return userWithoutPassword;
-
 };
 
 export const verifyOTP = async (email: string, otp: string) => {

@@ -10,15 +10,19 @@ export default function RegisterPage(){
     const [form, setForm] = useState({ username: '', email: '', password: '', phone: '', dob: '' })
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) =>{
         e.preventDefault();
+        setSubmitting(true);
         try {
             await registerUser(form);
             toast.info("OTP sent to your email!");
             router.push(`/register/verify?email=${encodeURIComponent(form.email)}`);
         } catch (err) {
             toast.error(err instanceof Error ? err.message : "Registration failed. Please check your details.");
+        } finally{
+            setSubmitting(false);
         }
     };
 
@@ -93,7 +97,9 @@ export default function RegisterPage(){
             />
           </div>
 
-          <button type="submit" className={styles.submitBtn}>Create Account</button>
+          <button type="submit" className={styles.submitBtn} disabled={submitting}>
+            {submitting ? "Creating Account..." : "Create Account"}
+          </button>
         </form>
       </div>
     </div>
